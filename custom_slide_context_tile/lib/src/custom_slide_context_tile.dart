@@ -5,11 +5,10 @@ import 'package:custom_slide_context_tile/src/animations/pull_animation.dart';
 import 'package:custom_slide_context_tile/src/animations/reveal_animation.dart';
 import 'package:custom_slide_context_tile/src/utils/action_size_calculator.dart';
 import 'package:custom_slide_context_tile/src/utils/animation_helpers.dart';
+import 'package:custom_slide_context_tile/src/utils/haptic_feedback_helper.dart';
 import 'package:custom_slide_context_tile/src/widgets/context_menu.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class CustomSlideContextTile extends StatefulWidget {
   final Widget child;
@@ -218,17 +217,12 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
 
           // Trigger haptic feedback if we're transitioning into the expanded state
           if (shouldExpandDefaultAction && !_shouldExpandDefaultAction) {
-            if (defaultTargetPlatform == TargetPlatform.iOS) {
-              HapticFeedback.mediumImpact();
-            }
+            triggerHapticFeedback();
           }
 
           _shouldExpandDefaultAction = shouldExpandDefaultAction;
         } else {
-          if (defaultTargetPlatform == TargetPlatform.iOS) {
-            HapticFeedback.mediumImpact();
-          }
-
+          triggerHapticFeedback();
           _shouldExpandDefaultAction = false;
         }
 

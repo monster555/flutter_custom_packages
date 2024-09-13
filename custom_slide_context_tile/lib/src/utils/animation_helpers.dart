@@ -1,3 +1,4 @@
+import 'package:custom_slide_context_tile/src/utils/haptic_feedback_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
@@ -16,9 +17,7 @@ double determineTargetOffset(
   if (offset > 0) {
     if (offset > maxLeadingOffset + actionExecutionThreshold) {
       if (!actionExecuted) {
-        if (defaultTargetPlatform == TargetPlatform.iOS) {
-          HapticFeedback.mediumImpact();
-        }
+        triggerHapticFeedback();
         onLeadingAction?.call();
       }
 
@@ -31,9 +30,7 @@ double determineTargetOffset(
   } else {
     if (offset < -(maxTrailingOffset + actionExecutionThreshold)) {
       if (!actionExecuted) {
-        if (defaultTargetPlatform == TargetPlatform.iOS) {
-          HapticFeedback.mediumImpact();
-        }
+        triggerHapticFeedback();
         onTrailingAction?.call();
       }
 
