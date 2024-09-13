@@ -1,0 +1,21 @@
+name: custom_slide_context_tile
+description: "A new Flutter package project."
+version: 0.0.1
+homepage:
+
+environment:
+  sdk: ^3.5.0
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  dart_code_metrics:
+  mockito: ^5.4.4
+
+flutter:
