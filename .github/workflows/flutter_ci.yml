@@ -31,3 +31,11 @@ jobs:
       - name: Run tests
         run: flutter test
         working-directory: ${{ matrix.package }}
+
+      - name: Lint analysis
+        run: flutter analyze
+        working-directory: ${{ matrix.package }}
+
+      - name: Check Dart formatting
+        run: dart format --set-exit-if-changed .
+        working-directory: ${{ matrix.package }}
