@@ -1,0 +1,33 @@
+name: Flutter CI
+
+on: [pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        package: [custom_popup, custom_slide_context_tile]
+
+    steps:
+      - uses: actions/checkout@v2.4.2
+
+      - name: Setup Java and Flutter
+        uses: actions/setup-java@v3.4.1
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Get dependencies
+        run: flutter pub get
+        working-directory: ${{ matrix.package }}
+
+      - name: Run tests
+        run: flutter test
+        working-directory: ${{ matrix.package }}
