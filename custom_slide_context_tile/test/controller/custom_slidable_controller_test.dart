@@ -67,5 +67,13 @@ void main() {
       expect(() => controller.openTrailing(), returnsNormally);
       expect(() => controller.close(), returnsNormally);
     });
+
+    test('Controller updates state correctly', () {
+      expect(controller.isOpen, isFalse);
+      controller.updateState(true);
+      expect(controller.isOpen, isTrue);
+      controller.updateState(false);
+      expect(controller.isOpen, isFalse);
+    });
   });
 }
