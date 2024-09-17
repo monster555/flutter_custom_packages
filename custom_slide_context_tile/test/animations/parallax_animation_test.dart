@@ -7,9 +7,12 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('ParallaxAnimation', () {
     late ParallaxAnimation animation;
+    late CustomSlidableController mockController;
 
     setUp(() {
       animation = ParallaxAnimation();
+
+      mockController = CustomSlidableController();
     });
 
     testWidgets('buildLeadingActions creates correct number of widgets',
@@ -22,7 +25,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: animation.buildLeadingActions(
-                actions, keys, 100, 200, true, false),
+                actions, keys, 100, 200, true, false, mockController),
           ),
         ),
       );
@@ -47,7 +50,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: animation.buildTrailingActions(
-                actions, keys, -100, 200, true, false),
+                actions, keys, -100, 200, true, false, mockController),
           ),
         ),
       );
@@ -72,7 +75,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: animation.buildLeadingActions(
-                actions, keys, 100, 200, true, false),
+                actions, keys, 100, 200, true, false, mockController),
           ),
         ),
       );
@@ -125,7 +128,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: animation.buildTrailingActions(
-                actions, keys, -100, 200, true, false),
+                actions, keys, -100, 200, true, false, mockController),
           ),
         ),
       );
@@ -160,7 +163,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: animation.buildLeadingActions(
-                actions, keys, 100, 200, true, false),
+                actions, keys, 100, 200, true, false, mockController),
           ),
         ),
       );
@@ -180,7 +183,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: animation.buildLeadingActions(
-                actions, keys, 100, 200, true, false),
+                actions, keys, 100, 200, true, false, mockController),
           ),
         ),
       );

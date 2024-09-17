@@ -53,10 +53,13 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: MenuAction(
-              onPressed: () {},
-              icon: Icons.home,
-              backgroundColor: backgroundColor,
+            body: MenuActionScope(
+              showLabels: true,
+              child: MenuAction(
+                onPressed: () {},
+                icon: Icons.home,
+                backgroundColor: backgroundColor,
+              ),
             ),
           ),
         ),
@@ -75,9 +78,12 @@ void main() {
         MaterialApp(
           theme: ThemeData(scaffoldBackgroundColor: scaffoldColor),
           home: Scaffold(
-            body: MenuAction(
-              onPressed: () {},
-              icon: Icons.home,
+            body: MenuActionScope(
+              showLabels: true,
+              child: MenuAction(
+                onPressed: () {},
+                icon: Icons.home,
+              ),
             ),
           ),
         ),
@@ -93,9 +99,12 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: MenuAction(
-              onPressed: () => wasTapped = true,
-              icon: Icons.home,
+            body: MenuActionScope(
+              showLabels: true,
+              child: MenuAction(
+                onPressed: () => wasTapped = true,
+                icon: Icons.home,
+              ),
             ),
           ),
         ),

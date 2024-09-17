@@ -1,4 +1,5 @@
 import 'package:custom_slide_context_tile/src/animations/animation_strategy.dart';
+import 'package:custom_slide_context_tile/src/controller/custom_slidable_controller.dart';
 import 'package:custom_slide_context_tile/src/utils/menu_action_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,6 +16,7 @@ class MockAnimationStrategy extends AnimationStrategy {
     bool showLabels,
     bool shouldExpandDefaultAction,
     bool isLeading,
+    CustomSlidableController? slidableController,
   ) {
     buildActionsCalls.add({
       'actions': actions,
@@ -24,6 +26,7 @@ class MockAnimationStrategy extends AnimationStrategy {
       'showLabels': showLabels,
       'shouldExpandDefaultAction': shouldExpandDefaultAction,
       'isLeading': isLeading,
+      'slidableController': slidableController,
     });
     return MenuActionScope(
       showLabels: showLabels,
@@ -53,9 +56,11 @@ class MockAnimationStrategy extends AnimationStrategy {
 void main() {
   group('AnimationStrategy', () {
     late AnimationStrategy strategy;
+    late CustomSlidableController mockController;
 
     setUp(() {
       strategy = MockAnimationStrategy();
+      mockController = CustomSlidableController();
     });
 
     group('calculateOverscroll', () {
@@ -138,7 +143,7 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: strategy.buildActions(
-                  actions, keys, 10, 100, true, true, true),
+                  actions, keys, 10, 100, true, true, true, mockController),
             ),
           ),
         );
@@ -156,7 +161,7 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: strategy.buildActions(
-                  actions, keys, 10, 100, true, true, true),
+                  actions, keys, 10, 100, true, true, true, mockController),
             ),
           ),
         );
@@ -180,8 +185,10 @@ void main() {
         final actions = [Container(), Container()];
         final keys = [GlobalKey(), GlobalKey()];
 
-        strategy.buildLeadingActions(actions, keys, 10, 100, true, true);
-        strategy.buildTrailingActions(actions, keys, 10, 100, true, true);
+        strategy.buildLeadingActions(
+            actions, keys, 10, 100, true, true, mockController);
+        strategy.buildTrailingActions(
+            actions, keys, 10, 100, true, true, mockController);
 
         expect((strategy as MockAnimationStrategy).buildActionsCalls.length, 2);
 
@@ -193,6 +200,7 @@ void main() {
           'showLabels': true,
           'shouldExpandDefaultAction': true,
           'isLeading': true,
+          'slidableController': mockController,
         });
 
         expect((strategy as MockAnimationStrategy).buildActionsCalls[1], {
@@ -203,6 +211,7 @@ void main() {
           'showLabels': true,
           'shouldExpandDefaultAction': true,
           'isLeading': false,
+          'slidableController': mockController,
         });
       });
     });
