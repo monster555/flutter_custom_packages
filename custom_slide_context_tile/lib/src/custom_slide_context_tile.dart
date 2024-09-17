@@ -127,6 +127,7 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
         maxLeadingOffset,
         _shouldDisplayLabels,
         _shouldExpandDefaultAction,
+        _internalController,
       );
 
   Widget get trailingActions => _animationStrategy.buildTrailingActions(
@@ -136,6 +137,7 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
         maxTrailingOffset,
         _shouldDisplayLabels,
         _shouldExpandDefaultAction,
+        _internalController,
       );
 
   MenuAction? get defaultLeadingAction {
@@ -356,7 +358,6 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
         ],
         Positioned.fill(
           child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
             key: const ValueKey<String>('gesture-detector'),
             onTap: _closeSlidable,
             onHorizontalDragUpdate: _onHorizontalDragUpdate,
