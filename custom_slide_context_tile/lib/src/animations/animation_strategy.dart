@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:custom_slide_context_tile/src/controller/custom_slidable_controller.dart';
 import 'package:custom_slide_context_tile/src/utils/menu_action_scope.dart';
 import 'package:flutter/material.dart';
 
@@ -42,6 +43,7 @@ abstract class AnimationStrategy {
   /// [showLabels] determines whether labels should be shown for the actions.
   /// [shouldExpandDefaultAction] indicates if the default action should be expanded.
   /// [isLeading] specifies whether these are leading (`true`) or trailing (`false`) actions.
+  /// [controller] is the [CustomSlidableController] associated with the menu.
   ///
   /// This method calculates the necessary dimensions, applies animations, and
   /// returns a widget tree representing the animated action items.
@@ -53,6 +55,7 @@ abstract class AnimationStrategy {
     bool showLabels,
     bool shouldExpandDefaultAction,
     bool isLeading,
+    CustomSlidableController? controller,
   ) {
     final overscroll = calculateOverscroll(offset, maxOffset, isLeading);
     final totalWidth = maxOffset + overscroll;
@@ -60,6 +63,7 @@ abstract class AnimationStrategy {
 
     return MenuActionScope(
       showLabels: showLabels,
+      controller: controller,
       child: TweenAnimationBuilder<double>(
         tween: Tween<double>(begin: 0, end: shouldExpandDefaultAction ? 1 : 0),
         duration: const Duration(milliseconds: 300),
@@ -224,8 +228,8 @@ abstract class AnimationStrategy {
   /// specific behavior for leading actions. It uses the general [buildActions]
   /// method with `isLeading` set to true.
   ///
-  /// [actions], [keys], [offset], [maxOffset], [showLabels], and
-  /// [shouldExpandDefaultAction] are passed through to [buildActions].
+  /// [actions], [keys], [offset], [maxOffset], [showLabels],
+  /// [shouldExpandDefaultAction] and [controller] are passed through to [buildActions].
   ///
   /// Returns a widget representing the leading actions with appropriate animations.
   Widget buildLeadingActions(
@@ -235,6 +239,7 @@ abstract class AnimationStrategy {
     double maxOffset,
     bool showLabels,
     bool shouldExpandDefaultAction,
+    CustomSlidableController? controller,
   ) =>
       buildActions(
         actions,
@@ -244,6 +249,7 @@ abstract class AnimationStrategy {
         showLabels,
         shouldExpandDefaultAction,
         true,
+        controller,
       );
 
   /// Builds the trailing actions.
@@ -252,8 +258,8 @@ abstract class AnimationStrategy {
   /// specific behavior for trailing actions. It uses the general [buildActions]
   /// method with `isLeading` set to false.
   ///
-  /// [actions], [keys], [offset], [maxOffset], [showLabels], and
-  /// [shouldExpandDefaultAction] are passed through to [buildActions].
+  /// [actions], [keys], [offset], [maxOffset], [showLabels],
+  /// [shouldExpandDefaultAction] and [controller] are passed through to [buildActions].
   ///
   /// Returns a widget representing the trailing actions with appropriate animations.
   Widget buildTrailingActions(
@@ -263,6 +269,7 @@ abstract class AnimationStrategy {
     double maxOffset,
     bool showLabels,
     bool shouldExpandDefaultAction,
+    CustomSlidableController? controller,
   ) =>
       buildActions(
         actions,
@@ -272,5 +279,6 @@ abstract class AnimationStrategy {
         showLabels,
         shouldExpandDefaultAction,
         false,
+        controller,
       );
 }

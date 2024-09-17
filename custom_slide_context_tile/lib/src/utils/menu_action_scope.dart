@@ -1,3 +1,4 @@
+import 'package:custom_slide_context_tile/src/controller/custom_slidable_controller.dart';
 import 'package:flutter/widgets.dart';
 
 /// A widget that provides menu action configuration to its descendants.
@@ -16,6 +17,11 @@ class MenuActionScope extends InheritedWidget {
   /// or other visual representations of menu actions.
   final bool showLabels;
 
+  /// The controller that is used to close the menu when an action is executed.
+  ///
+  /// If null, the menu will not be closed.
+  final CustomSlidableController? controller;
+
   /// Creates a [MenuActionScope] widget.
   ///
   /// The [showLabels] parameter must not be null.
@@ -24,6 +30,7 @@ class MenuActionScope extends InheritedWidget {
   const MenuActionScope({
     super.key,
     required this.showLabels,
+    this.controller,
     required super.child,
   });
 
@@ -50,9 +57,9 @@ class MenuActionScope extends InheritedWidget {
   /// This method is called by the framework to determine if widgets that depend
   /// on this [MenuActionScope] should rebuild when it changes.
   ///
-  /// Returns true if [showLabels] has changed, indicating that dependent
+  /// Returns true if [showLabels] or [controller] has changed, indicating that dependent
   /// widgets need to rebuild to reflect the new configuration.
   @override
   bool updateShouldNotify(MenuActionScope oldWidget) =>
-      showLabels != oldWidget.showLabels;
+      showLabels != oldWidget.showLabels || controller != oldWidget.controller;
 }
