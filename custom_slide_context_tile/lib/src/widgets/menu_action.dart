@@ -24,7 +24,7 @@ class MenuAction extends StatefulWidget {
   });
 
   /// The callback function to be called when the action is tapped.
-  final VoidCallback? onPressed;
+  final VoidCallback onPressed;
 
   /// The icon to be displayed for this action.
   final IconData icon;
@@ -45,16 +45,22 @@ class MenuAction extends StatefulWidget {
 class _MenuActionState extends State<MenuAction> {
   @override
   Widget build(BuildContext context) {
+    final menuActionScope = MenuActionScope.of(context);
     // Determine whether to show the label based on the MenuActionScope and if a label is provided
-    final showLabel =
-        (widget.label != null && MenuActionScope.of(context).showLabels);
+    final showLabel = (widget.label != null && menuActionScope.showLabels);
+
+    // Get the controller from the MenuActionScope
+    final controller = menuActionScope.controller;
 
     // Use the provided background color or default to the scaffold background color
     final backgroundColor =
         widget.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor;
 
     return InkWell(
-      onTap: widget.onPressed,
+      onTap: () {
+        widget.onPressed();
+        controller?.close();
+      },
       child: Material(
         child: DecoratedBox(
           decoration: BoxDecoration(
