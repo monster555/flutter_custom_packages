@@ -131,26 +131,26 @@ class _MyHomePageState extends State<MyHomePage>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.center,
-            //   children: [
-            //     ElevatedButton(
-            //       onPressed: controller.openLeading,
-            //       child: const Text('Open Leading 2'),
-            //     ),
-            //     const SizedBox(width: 8.0),
-            //     ElevatedButton(
-            //       onPressed: controller.openTrailing,
-            //       child: const Text('Open Trailing 2'),
-            //     ),
-            //     const SizedBox(width: 8.0),
-            //     ElevatedButton(
-            //       onPressed: controller.close,
-            //       child: const Text('Close 2'),
-            //     ),
-            //   ],
-            // ),
-            // const SizedBox(height: 16.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: controller.openLeading,
+                  child: const Text('Open Leading 2'),
+                ),
+                const SizedBox(width: 8.0),
+                ElevatedButton(
+                  onPressed: controller.openTrailing,
+                  child: const Text('Open Trailing 2'),
+                ),
+                const SizedBox(width: 8.0),
+                ElevatedButton(
+                  onPressed: controller.close,
+                  child: const Text('Close 2'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16.0),
             CustomSlideContextTile.withContextMenu(
               controller: controller,
               manager: manager,
