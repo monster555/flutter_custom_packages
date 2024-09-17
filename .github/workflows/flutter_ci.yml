@@ -4,6 +4,7 @@ on: [pull_request]
 
 jobs:
   test:
+    name: "Code Quality and Testing"
     runs-on: ubuntu-latest
 
     strategy:
