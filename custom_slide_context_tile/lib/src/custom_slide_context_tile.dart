@@ -5,6 +5,7 @@ import 'package:custom_slide_context_tile/src/animations/pull_animation.dart';
 import 'package:custom_slide_context_tile/src/animations/reveal_animation.dart';
 import 'package:custom_slide_context_tile/src/utils/action_size_calculator.dart';
 import 'package:custom_slide_context_tile/src/utils/animation_helpers.dart';
+import 'package:custom_slide_context_tile/src/utils/custom_scroll_behavior.dart';
 import 'package:custom_slide_context_tile/src/utils/haptic_feedback_helper.dart';
 import 'package:custom_slide_context_tile/src/widgets/context_menu.dart';
 import 'package:flutter/cupertino.dart';
@@ -23,6 +24,7 @@ class CustomSlideContextTile extends StatefulWidget {
   /// [actionExecutionThreshold] sets the sensitivity for executing actions.
   /// [revealAnimationType] determines how actions are animated into view.
   /// [controller] can be provided for external state management.
+  /// [shouldCloseOnScroll] determines if the tile should close when scrolling.
   const CustomSlideContextTile({
     super.key,
     required this.child,
@@ -32,6 +34,7 @@ class CustomSlideContextTile extends StatefulWidget {
     this.actionExecutionThreshold = 100.0,
     this.revealAnimationType = RevealAnimationType.reveal,
     this.controller,
+    this.shouldCloseOnScroll = true,
   }) : enableContextMenu = false;
 
   /// Creates a [CustomSlideContextTile] with a context menu.
@@ -52,6 +55,7 @@ class CustomSlideContextTile extends StatefulWidget {
     this.actionExecutionThreshold = 100.0,
     this.revealAnimationType = RevealAnimationType.reveal,
     this.controller,
+    this.shouldCloseOnScroll = true,
   }) : enableContextMenu = true;
 
   /// The main content of the tile that remains visible when not sliding.
@@ -85,6 +89,10 @@ class CustomSlideContextTile extends StatefulWidget {
   /// Determines whether the context menu is enabled for this tile.
   /// When true, a long press on the tile will reveal a context menu.
   final bool enableContextMenu;
+
+  /// Determines whether the tile should close when the user scrolls.
+  /// Defaults to true.
+  final bool shouldCloseOnScroll;
 
   @override
   State<CustomSlideContextTile> createState() => _CustomSlideContextTileState();
@@ -170,7 +178,7 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 450),
     )..addListener(() {
         double newOffset = _animation.value;
 
@@ -179,7 +187,7 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
             _offset = newOffset;
           });
 
-          widget.controller?.updateState(_offset != 0.0);
+          _internalController.updateState(_offset != 0.0);
         }
 
         if (_offset == 0) {
@@ -340,7 +348,7 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
   /// to the specified offset, updating the UI as the animation progresses.
   void animateToOffset(double targetOffset) {
     _animation = Tween<double>(begin: _offset, end: targetOffset).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
     );
     _controller.forward(from: 0.0);
   }
@@ -362,14 +370,18 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
             onTap: _closeSlidable,
             onHorizontalDragUpdate: _onHorizontalDragUpdate,
             onHorizontalDragEnd: _onHorizontalDragEnd,
-            child: Transform.translate(
-              offset: Offset(_offset, 0),
-              child: isContextMenuEnabled
-                  ? ContextMenu(
-                      actions: mergedActions,
-                      child: widget.child,
-                    )
-                  : widget.child,
+            child: CustomScrollBehavior(
+              controller: _internalController,
+              shouldCloseOnScroll: widget.shouldCloseOnScroll,
+              child: Transform.translate(
+                offset: Offset(_offset, 0),
+                child: isContextMenuEnabled
+                    ? ContextMenu(
+                        actions: mergedActions,
+                        child: widget.child,
+                      )
+                    : widget.child,
+              ),
             ),
           ),
         ),
