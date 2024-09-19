@@ -18,23 +18,27 @@ class CustomSlideContextTile extends StatefulWidget {
   /// a long-press context menu. This is useful for scenarios where
   /// you want to maintain a simpler interaction model.
   ///
-  /// [child] is the main content of the tile.
   /// [manager] is required to coordinate with other slidables.
+  /// [title] is the primary content of the tile, typically a text widget.
+  /// [subtitle] is optional additional content displayed below the title.
   /// [leadingActions] and [trailingActions] define the sliding actions.
   /// [actionExecutionThreshold] sets the sensitivity for executing actions.
   /// [revealAnimationType] determines how actions are animated into view.
   /// [controller] can be provided for external state management.
   /// [shouldCloseOnScroll] determines if the tile should close when scrolling.
+  /// [onTap] is called when the tile is tapped (when not sliding).
   const CustomSlideContextTile({
     super.key,
-    required this.child,
     required this.manager,
+    required this.title,
+    this.subtitle,
     this.leadingActions = const [],
     this.trailingActions = const [],
     this.actionExecutionThreshold = 100.0,
     this.revealAnimationType = RevealAnimationType.reveal,
     this.controller,
     this.shouldCloseOnScroll = true,
+    this.onTap,
   }) : enableContextMenu = false;
 
   /// Creates a [CustomSlideContextTile] with a context menu.
@@ -48,18 +52,30 @@ class CustomSlideContextTile extends StatefulWidget {
   /// [enableContextMenu] is set to true.
   const CustomSlideContextTile.withContextMenu({
     super.key,
-    required this.child,
     required this.manager,
+    required this.title,
+    this.subtitle,
     this.leadingActions = const [],
     this.trailingActions = const [],
     this.actionExecutionThreshold = 100.0,
     this.revealAnimationType = RevealAnimationType.reveal,
     this.controller,
     this.shouldCloseOnScroll = true,
+    this.onTap,
   }) : enableContextMenu = true;
 
-  /// The main content of the tile that remains visible when not sliding.
-  final Widget child;
+  /// The primary content of the list tile.
+  ///
+  /// Typically a [Text] widget. This field is required and cannot be null.
+  /// It's displayed as the main content of the tile, similar to a CupertinoListTile's title.
+  final Widget title;
+
+  /// Additional content displayed below the title.
+  ///
+  /// Typically a [Text] widget. This field is optional and can be null.
+  /// When provided, it adds a second line of text below the [title],
+  /// offering additional context or information about the list item.
+  final Widget? subtitle;
 
   /// Actions to be displayed on the leading (left) side when sliding.
   /// These actions are revealed when the user slides the tile to the right.
@@ -93,6 +109,14 @@ class CustomSlideContextTile extends StatefulWidget {
   /// Determines whether the tile should close when the user scrolls.
   /// Defaults to true.
   final bool shouldCloseOnScroll;
+
+  /// Called when the user taps the tile.
+  ///
+  /// This callback is not invoked if the tile is currently sliding or if
+  /// actions are revealed. It's only active when the tile is in its default,
+  /// closed state. Use this to handle navigation or to trigger actions that
+  /// should occur when the entire tile is tapped.
+  final VoidCallback? onTap;
 
   @override
   State<CustomSlideContextTile> createState() => _CustomSlideContextTileState();
@@ -162,9 +186,35 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
     return widget.trailingActions.last;
   }
 
+  /// Builds the child widget, which is a CupertinoListTile with the given title and subtitle.
+  ///
+  /// This getter creates a constrained CupertinoListTile that mimics the appearance
+  /// of a standard list tile while integrating with the sliding functionality.
+  Widget get child => ConstrainedBox(
+        constraints: const BoxConstraints(
+          minHeight: 48,
+        ),
+        child: CupertinoListTile(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          title: widget.title,
+          subtitle: widget.subtitle,
+          onTap: _internalController.isOpen ? null : widget.onTap,
+        ),
+      );
+
+  /// Determines if the tile can be dragged to the left.
+  ///
+  /// Returns true if there are trailing actions or if the tile is already offset to the right.
   bool get canDragLeft => widget.trailingActions.isNotEmpty || _offset > 0;
+
+  /// Determines if the tile can be dragged to the right.
+  ///
+  /// Returns true if there are leading actions or if the tile is already offset to the left.
   bool get canDragRight => widget.leadingActions.isNotEmpty || _offset < 0;
 
+  /// Determines if the context menu should be enabled.
+  ///
+  /// Returns true if context menu is enabled, the tile is not offset, and there are actions available.
   bool get isContextMenuEnabled =>
       widget.enableContextMenu && _offset == 0.0 && mergedActions.isNotEmpty;
 
@@ -212,7 +262,7 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
     controller.closeCallback = _close;
   }
 
-  /// Opens the leading (right) actions.
+  /// Opens the leading (left) actions.
   ///
   /// This method is called when the slidable needs to reveal its leading actions,
   /// either programmatically or in response to a user interaction.
@@ -221,7 +271,7 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
     animateToOffset(maxLeadingOffset);
   }
 
-  /// Opens the trailing (left) actions.
+  /// Opens the trailing (right) actions.
   ///
   /// This method is called when the slidable needs to reveal its trailing actions,
   /// either programmatically or in response to a user interaction.
@@ -340,7 +390,7 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
   ///
   /// This method is called when the user taps on the main content of the slidable,
   /// causing it to close if it's currently open.
-  void _closeSlidable() => animateToOffset(0.0);
+  void _onTap() => animateToOffset(0.0);
 
   /// Animates the slidable to a target offset.
   ///
@@ -364,24 +414,23 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
           trailingActions,
           leadingActions,
         ],
-        Positioned.fill(
-          child: GestureDetector(
-            key: const ValueKey<String>('gesture-detector'),
-            onTap: _closeSlidable,
-            onHorizontalDragUpdate: _onHorizontalDragUpdate,
-            onHorizontalDragEnd: _onHorizontalDragEnd,
-            child: CustomScrollBehavior(
-              controller: _internalController,
-              shouldCloseOnScroll: widget.shouldCloseOnScroll,
-              child: Transform.translate(
-                offset: Offset(_offset, 0),
-                child: isContextMenuEnabled
-                    ? ContextMenu(
-                        actions: mergedActions,
-                        child: widget.child,
-                      )
-                    : widget.child,
-              ),
+        GestureDetector(
+          key: const ValueKey<String>('gesture-detector'),
+          behavior: HitTestBehavior.deferToChild,
+          onTap: _onTap,
+          onHorizontalDragUpdate: _onHorizontalDragUpdate,
+          onHorizontalDragEnd: _onHorizontalDragEnd,
+          child: CustomScrollBehavior(
+            controller: _internalController,
+            shouldCloseOnScroll: widget.shouldCloseOnScroll,
+            child: Transform.translate(
+              offset: Offset(_offset, 0),
+              child: isContextMenuEnabled
+                  ? ContextMenu(
+                      actions: mergedActions,
+                      child: child,
+                    )
+                  : child,
             ),
           ),
         ),
