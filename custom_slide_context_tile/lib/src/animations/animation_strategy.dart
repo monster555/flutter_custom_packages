@@ -66,7 +66,7 @@ abstract class AnimationStrategy {
       controller: controller,
       child: TweenAnimationBuilder<double>(
         tween: Tween<double>(begin: 0, end: shouldExpandDefaultAction ? 1 : 0),
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 350),
         curve: Curves.fastOutSlowIn,
         builder: (context, animationValue, child) {
           return _buildAnimatedContent(
@@ -241,15 +241,17 @@ abstract class AnimationStrategy {
     bool shouldExpandDefaultAction,
     CustomSlidableController? controller,
   ) =>
-      buildActions(
-        actions,
-        keys,
-        offset,
-        maxOffset,
-        showLabels,
-        shouldExpandDefaultAction,
-        true,
-        controller,
+      Positioned.fill(
+        child: buildActions(
+          actions,
+          keys,
+          offset,
+          maxOffset,
+          showLabels,
+          shouldExpandDefaultAction,
+          true,
+          controller,
+        ),
       );
 
   /// Builds the trailing actions.
@@ -271,14 +273,16 @@ abstract class AnimationStrategy {
     bool shouldExpandDefaultAction,
     CustomSlidableController? controller,
   ) =>
-      buildActions(
-        actions,
-        keys,
-        offset,
-        maxOffset,
-        showLabels,
-        shouldExpandDefaultAction,
-        false,
-        controller,
+      Positioned.fill(
+        child: buildActions(
+          actions,
+          keys,
+          offset,
+          maxOffset,
+          showLabels,
+          shouldExpandDefaultAction,
+          false,
+          controller,
+        ),
       );
 }
