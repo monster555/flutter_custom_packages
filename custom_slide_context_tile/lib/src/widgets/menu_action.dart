@@ -75,13 +75,20 @@ class _MenuActionState extends State<MenuAction> {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(widget.icon),
-                if (showLabel)
-                  Text(
-                    widget.label!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                Flexible(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(widget.icon),
+                      if (showLabel)
+                        Text(
+                          widget.label!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                    ],
                   ),
+                ),
               ],
             ),
           ),
