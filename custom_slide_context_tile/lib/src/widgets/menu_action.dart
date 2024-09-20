@@ -45,16 +45,26 @@ class MenuAction extends StatefulWidget {
 class _MenuActionState extends State<MenuAction> {
   @override
   Widget build(BuildContext context) {
-    final menuActionScope = MenuActionScope.of(context);
+    final scope = MenuActionScope.of(context);
     // Determine whether to show the label based on the MenuActionScope and if a label is provided
-    final showLabel = (widget.label != null && menuActionScope.showLabels);
+    final showLabel = (widget.label != null && scope.showLabels);
 
     // Get the controller from the MenuActionScope
-    final controller = menuActionScope.controller;
+    final controller = scope.controller;
+
+    final isLeading = scope.isLeading;
+
+    final shouldExpandDefaultAction = scope.shouldExpandDefaultAction;
 
     // Use the provided background color or default to the scaffold background color
     final backgroundColor =
         widget.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor;
+
+    final alignment = shouldExpandDefaultAction
+        ? isLeading
+            ? Alignment.centerRight
+            : Alignment.centerLeft
+        : Alignment.center;
 
     return InkWell(
       onTap: () {
@@ -67,29 +77,26 @@ class _MenuActionState extends State<MenuAction> {
             color: backgroundColor,
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 8.0,
+            padding: EdgeInsets.symmetric(
+              horizontal: shouldExpandDefaultAction ? 16.0 : 8.0,
               vertical: 2.0,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Flexible(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(widget.icon),
-                      if (showLabel)
-                        Text(
-                          widget.label!,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                    ],
-                  ),
-                ),
-              ],
+            child: AnimatedAlign(
+              alignment: alignment,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.fastOutSlowIn,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(widget.icon),
+                  if (showLabel)
+                    Text(
+                      widget.label!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                ],
+              ),
             ),
           ),
         ),
