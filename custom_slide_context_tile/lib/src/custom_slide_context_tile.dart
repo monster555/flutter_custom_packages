@@ -124,6 +124,9 @@ class CustomSlideContextTile extends StatefulWidget {
 
 class _CustomSlideContextTileState extends State<CustomSlideContextTile>
     with TickerProviderStateMixin {
+  static const double _screenWidthThresholdFactor = 0.4;
+  static const double _maxWidthFactor = 0.9;
+
   double _offset = 0.0;
   double maxLeadingOffset = 0.0;
   double maxTrailingOffset = 0.0;
@@ -147,12 +150,23 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
     ...widget.trailingActions,
   ];
 
+  double get actionExecutionThreshold {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final maxOffset = _offset > 0 ? maxLeadingOffset : maxTrailingOffset;
+
+    // Calculate threshold based on maxOffset and screenWidth
+    return maxOffset > screenWidth * _screenWidthThresholdFactor
+        ? widget.actionExecutionThreshold
+        : screenWidth * _screenWidthThresholdFactor;
+  }
+
   late final bool _shouldDisplayLabels = widget.leadingActions.isNotEmpty &&
       widget.trailingActions.isNotEmpty &&
       widget.leadingActions.every((action) => action.label != null) &&
       widget.trailingActions.every((action) => action.label != null);
 
-  Widget get leadingActions => _animationStrategy.buildLeadingActions(
+  Widget get leadingActions =>
+      _wrapWithDragGesture(_animationStrategy.buildLeadingActions(
         widget.leadingActions,
         _leadingActionKeys,
         _offset,
@@ -160,9 +174,10 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
         _shouldDisplayLabels,
         _shouldExpandDefaultAction,
         _internalController,
-      );
+      ));
 
-  Widget get trailingActions => _animationStrategy.buildTrailingActions(
+  Widget get trailingActions =>
+      _wrapWithDragGesture(_animationStrategy.buildTrailingActions(
         widget.trailingActions,
         _trailingActionKeys,
         _offset,
@@ -170,7 +185,20 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
         _shouldDisplayLabels,
         _shouldExpandDefaultAction,
         _internalController,
-      );
+      ));
+
+  /// Wrap the actions with GestureDetector to allow drag gestures
+  Widget _wrapWithDragGesture(Widget actionWidget) {
+    return Positioned.fill(
+      child: GestureDetector(
+        behavior: HitTestBehavior
+            .translucent, // Ensures the drag gesture is recognized even if a tap happens.
+        onHorizontalDragUpdate: _onHorizontalDragUpdate,
+        onHorizontalDragEnd: _onHorizontalDragEnd,
+        child: actionWidget,
+      ),
+    );
+  }
 
   MenuAction? get defaultLeadingAction {
     if (widget.leadingActions.isEmpty) {
@@ -328,6 +356,7 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
 
     setState(() {
       if ((delta > 0 && canDragRight) || (delta < 0 && canDragLeft)) {
+        final screenWidth = MediaQuery.sizeOf(context).width;
         _offset += delta;
 
         // Determine the maximum offset based on drag direction
@@ -340,22 +369,22 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
 
           // Determine if we should expand
           bool shouldExpandDefaultAction =
-              overscroll > widget.actionExecutionThreshold;
+              overscroll > actionExecutionThreshold;
 
           // Trigger haptic feedback if we're transitioning into the expanded state
           if (shouldExpandDefaultAction && !_shouldExpandDefaultAction) {
             triggerHapticFeedback();
+          } else if (!shouldExpandDefaultAction && _shouldExpandDefaultAction) {
+            triggerHapticFeedback();
+            _shouldExpandDefaultAction = false;
           }
 
           _shouldExpandDefaultAction = shouldExpandDefaultAction;
-        } else {
-          triggerHapticFeedback();
-          _shouldExpandDefaultAction = false;
         }
 
         // Clamp the offset to 90% of the screen width to prevent excessive
         // overscroll
-        final maxWidth = MediaQuery.sizeOf(context).width * 0.9;
+        final maxWidth = screenWidth * _maxWidthFactor;
         _offset = _offset.clamp(-maxWidth, maxWidth);
       }
     });
@@ -372,7 +401,7 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
       velocity,
       maxLeadingOffset,
       maxTrailingOffset,
-      widget.actionExecutionThreshold,
+      actionExecutionThreshold,
       defaultLeadingAction?.onPressed,
       defaultTrailingAction?.onPressed,
       _actionExecuted,
