@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'CustomSlideContextTile Example'),
     );
   }
 }
@@ -60,10 +60,10 @@ class _MyHomePageState extends State<MyHomePage> {
           backgroundColor: Colors.blue,
         ),
         MenuAction(
-          icon: Icons.home,
+          icon: Icons.refresh,
           // Action when button is pressed
-          onPressed: () => logAction('Home'),
-          label: 'Replay',
+          onPressed: () => logAction('Update'),
+          label: 'Update',
           backgroundColor: Colors.yellow,
         ),
         MenuAction(
@@ -113,72 +113,64 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: controller.openLeading,
-                    child: const Text('Open Leading 2'),
-                  ),
-                  const SizedBox(width: 8.0),
-                  ElevatedButton(
-                    onPressed: controller.openTrailing,
-                    child: const Text('Open Trailing 2'),
-                  ),
-                  const SizedBox(width: 8.0),
-                  ElevatedButton(
-                    onPressed: controller.close,
-                    child: const Text('Close 2'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16.0),
-              CustomSlideContextTile.withContextMenu(
-                controller: controller,
-                manager: manager,
-                leadingActions: leadingActions,
-                trailingActions: trailingActions,
-                revealAnimationType: RevealAnimationType.parallax,
-                title: const Text('Swipe me Parallax'),
-                onTap: () => logAction('Parallax tapped...'),
-              ),
-              const SizedBox(height: 8.0),
-              CustomSlideContextTile.withContextMenu(
-                manager: manager,
-                leadingActions: leadingActions,
-                trailingActions: trailingActions,
-                revealAnimationType: RevealAnimationType.pull,
-                title: const Text(
-                  'Swipe me Pull',
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Wrap(
+              children: [
+                ElevatedButton(
+                  onPressed: controller.openLeading,
+                  child: const Text('Leading'),
                 ),
-                subtitle: const Text('Subtitle'),
-              ),
-              const SizedBox(height: 8.0),
-              CustomSlideContextTile.withContextMenu(
+                const SizedBox(width: 8.0),
+                ElevatedButton(
+                  onPressed: controller.openTrailing,
+                  child: const Text('Trailing'),
+                ),
+                const SizedBox(width: 8.0),
+                ElevatedButton(
+                  onPressed: controller.close,
+                  child: const Text('Close'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16.0),
+            CustomSlideContextTile(
+              controller: controller,
+              manager: manager,
+              leadingActions: [leadingActions.last],
+              trailingActions: trailingActions.take(3).toList(),
+              revealAnimationType: RevealAnimationType.parallax,
+              title: const Text('Swipe me'),
+              onTap: () => logAction('Parallax tapped...'),
+            ),
+            const SizedBox(height: 8.0),
+            CustomSlideContextTile(
+              manager: manager,
+              leadingActions: leadingActions,
+              trailingActions: trailingActions,
+              revealAnimationType: RevealAnimationType.pull,
+              title: const Text('Swipe me'),
+              subtitle: const Text('Subtitle'),
+            ),
+            const SizedBox(height: 8.0),
+            CustomSlideContextTile(
+              manager: manager,
+              leadingActions: leadingActions,
+              revealAnimationType: RevealAnimationType.reveal,
+              title: const Text('Swipe me, no trailing actions'),
+            ),
+            ...List<Widget>.generate(
+              15,
+              (e) => CustomSlideContextTile(
                 manager: manager,
                 leadingActions: leadingActions,
+                trailingActions: trailingActions,
                 revealAnimationType: RevealAnimationType.reveal,
-                title: const Text('Swipe me Reveal, no trailing actions'),
+                title: const Text('Swipe'),
               ),
-              ...List<Widget>.generate(
-                10,
-                (e) => CustomSlideContextTile.withContextMenu(
-                  manager: manager,
-                  leadingActions: leadingActions,
-                  trailingActions: trailingActions,
-                  revealAnimationType: RevealAnimationType.reveal,
-                  title: const Text(
-                    'Swipe me Reveal',
-                  ),
-                ),
-              )
-            ],
-          ),
+            )
+          ],
         ),
       ),
     );

@@ -36,6 +36,13 @@ class ContextMenu extends StatelessWidget {
     final validActions =
         actions.where(_validateAction).map(buildAction).toList();
 
+    assert(validActions.isNotEmpty, 'No valid actions for the context menu');
+
+    // Return child if there are no valid actions
+    if (validActions.isEmpty) {
+      return child;
+    }
+
     return CupertinoContextMenu(
       key: UniqueKey(),
       actions: validActions,
