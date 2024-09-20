@@ -24,12 +24,8 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: Stack(
-              children: [
-                animation.buildLeadingActions(
-                    actions, keys, 100, 200, true, false, mockController),
-              ],
-            ),
+            body: animation.buildLeadingActions(
+                actions, keys, 100, 200, true, false, mockController),
           ),
         ),
       );
@@ -53,12 +49,8 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: Stack(
-              children: [
-                animation.buildTrailingActions(
-                    actions, keys, -100, 200, true, false, mockController),
-              ],
-            ),
+            body: animation.buildTrailingActions(
+                actions, keys, -100, 200, true, false, mockController),
           ),
         ),
       );
@@ -82,12 +74,8 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: Stack(
-              children: [
-                animation.buildLeadingActions(
-                    actions, keys, 100, 200, true, false, mockController),
-              ],
-            ),
+            body: animation.buildLeadingActions(
+                actions, keys, 100, 200, true, false, mockController),
           ),
         ),
       );
@@ -139,12 +127,8 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: Stack(
-              children: [
-                animation.buildTrailingActions(
-                    actions, keys, -100, 200, true, false, mockController),
-              ],
-            ),
+            body: animation.buildTrailingActions(
+                actions, keys, -100, 200, true, false, mockController),
           ),
         ),
       );
@@ -178,12 +162,8 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: Stack(
-              children: [
-                animation.buildLeadingActions(
-                    actions, keys, 100, 200, true, false, mockController),
-              ],
-            ),
+            body: animation.buildLeadingActions(
+                actions, keys, 100, 200, true, false, mockController),
           ),
         ),
       );
@@ -202,12 +182,8 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: Stack(
-              children: [
-                animation.buildLeadingActions(
-                    actions, keys, 100, 200, true, false, mockController),
-              ],
-            ),
+            body: animation.buildLeadingActions(
+                actions, keys, 100, 200, true, false, mockController),
           ),
         ),
       );
