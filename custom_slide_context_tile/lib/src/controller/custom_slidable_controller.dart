@@ -19,6 +19,15 @@ class CustomSlidableController {
   /// Callback function to close the slidable.
   VoidCallback? closeCallback;
 
+  /// Callback functions that are triggered when the slidable is opened or closed.
+  ///
+  /// - [onOpen] is called when the slidable is opened, allowing external components
+  /// to respond to the open state.
+  /// - [onClose] is called when the slidable is closed, allowing external components t
+  /// o respond to the close state.
+  VoidCallback? onOpen;
+  VoidCallback? onClose;
+
   /// Internal flag to track whether the slidable is open.
   bool _isOpen = false;
 
@@ -26,19 +35,31 @@ class CustomSlidableController {
   ///
   /// This method invokes the [openLeadingCallback] if it's set.
   /// It should be called when you want to programmatically open the leading actions.
-  void openLeading() => openLeadingCallback?.call();
+  void openLeading() {
+    openLeadingCallback?.call();
+    onOpen?.call(); // Notify that it's opened
+    _isOpen = true;
+  }
 
   /// Opens the trailing actions of the slidable.
   ///
   /// This method invokes the [openTrailingCallback] if it's set.
   /// It should be called when you want to programmatically open the trailing actions.
-  void openTrailing() => openTrailingCallback?.call();
+  void openTrailing() {
+    openTrailingCallback?.call();
+    onOpen?.call(); // Notify that it's opened
+    _isOpen = true;
+  }
 
   /// Closes the slidable.
   ///
   /// This method invokes the [closeCallback] if it's set.
   /// It should be called when you want to programmatically close the slidable.
-  void close() => closeCallback?.call();
+  void close() {
+    closeCallback?.call();
+    onClose?.call(); // Notify that it's closed
+    _isOpen = false;
+  }
 
   /// Updates the internal state based on the current offset of the slidable.
   ///
@@ -56,7 +77,14 @@ class CustomSlidableController {
   /// This method can be used to forcibly set the state of the slidable,
   /// which can be useful in scenarios where the state needs to be updated
   /// without an actual slide action.
-  void updateState(bool isOpen) => _isOpen = isOpen;
+  void updateState(bool isOpen) {
+    _isOpen = isOpen;
+    if (isOpen) {
+      onOpen?.call(); // Notify if opened
+    } else {
+      onClose?.call(); // Notify if closed
+    }
+  }
 
   /// Returns whether the slidable is currently open.
   ///

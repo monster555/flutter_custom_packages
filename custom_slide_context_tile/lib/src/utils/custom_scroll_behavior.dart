@@ -44,6 +44,17 @@ class _CustomScrollBehaviorState extends State<CustomScrollBehavior> {
   /// The current scroll position being listened to.
   ScrollPosition? scrollPosition;
 
+  /// The controller for the currently open Slidable.
+  /// This ensures that only one Slidable can be open at a time.
+  static CustomSlidableController? _currentlyOpen;
+
+  // Getter to check if this controller is currently open
+  bool get _isCurrentlyOpen => _currentlyOpen == widget.controller;
+
+  // Getter to check if another Slidable is currently open
+  bool get _isAnotherCurrentlyOpen =>
+      _currentlyOpen != null && _currentlyOpen != widget.controller;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -59,7 +70,37 @@ class _CustomScrollBehaviorState extends State<CustomScrollBehavior> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    // Set up callbacks to track opening and closing of Slidable
+    widget.controller.onOpen = () {
+      setState(() {
+        // Close any currently open Slidable when a new one is opened
+        if (_isAnotherCurrentlyOpen) {
+          _currentlyOpen!.close(); // Close the previously open Slidable
+        }
+        // Set this as currently open
+        _currentlyOpen = widget.controller;
+      });
+    };
+
+    widget.controller.onClose = () {
+      setState(() {
+        if (_isCurrentlyOpen) {
+          // Reset if this was currently open
+          _currentlyOpen = null;
+        }
+      });
+    };
+  }
+
+  @override
   void dispose() {
+    // If this Slidable is currently open, reset the tracker
+    if (_isCurrentlyOpen) {
+      _currentlyOpen = null;
+    }
     _removeScrollListener();
     super.dispose();
   }
@@ -108,6 +149,16 @@ class _CustomScrollBehaviorState extends State<CustomScrollBehavior> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.child;
+    return Listener(
+      onPointerDown: (_) {
+        // Close any currently open Slidable when a new one is touched
+        if (_isAnotherCurrentlyOpen) {
+          _currentlyOpen!.close(); // Close the previously open Slidable
+        }
+        // Set this as the currently open Slidable
+        _currentlyOpen = widget.controller;
+      },
+      child: widget.child,
+    );
   }
 }

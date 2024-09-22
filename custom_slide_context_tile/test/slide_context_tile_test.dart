@@ -5,11 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('CustomSlideContextTile', () {
-    late SlidableManager mockManager;
     late CustomSlidableController controller;
 
     setUp(() {
-      mockManager = SlidableManager();
       controller = CustomSlidableController();
     });
 
@@ -17,10 +15,9 @@ void main() {
       // Tests related to rendering of the widget
       testWidgets('renders child widget', (WidgetTester tester) async {
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: CustomSlideContextTile(
-              manager: mockManager,
-              title: const Text('Test Child'),
+              title: Text('Test Child'),
             ),
           ),
         );
@@ -34,7 +31,6 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: CustomSlideContextTile(
-                manager: mockManager,
                 controller: controller,
                 leadingActions: [
                   MenuAction(
@@ -60,7 +56,6 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: CustomSlideContextTile(
-                manager: mockManager,
                 controller: controller,
                 leadingActions: [
                   MenuAction(
@@ -87,7 +82,6 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: CustomSlideContextTile(
-                manager: mockManager,
                 controller: controller,
                 leadingActions: [
                   MenuAction(
@@ -112,7 +106,6 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: CustomSlideContextTile(
-                manager: mockManager,
                 controller: controller,
                 leadingActions: [
                   MenuAction(
@@ -150,7 +143,6 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: CustomSlideContextTile(
-                manager: mockManager,
                 controller: controller,
                 leadingActions: [
                   MenuAction(
@@ -185,7 +177,6 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: CustomSlideContextTile(
-                manager: mockManager,
                 leadingActions: leadingActions,
                 title: const Text('Test Child'),
               ),
@@ -222,7 +213,6 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: CustomSlideContextTile(
-                manager: mockManager,
                 trailingActions: trailingActions,
                 title: const Text('Test Child'),
               ),
@@ -249,7 +239,6 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: CustomSlideContextTile(
-                manager: mockManager,
                 controller: controller,
                 title: const Text('Test Child'),
               ),
@@ -278,7 +267,6 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: CustomSlideContextTile(
-                manager: mockManager,
                 controller: controller,
                 leadingActions: manyActions,
                 title: const Text('Test Child'),
@@ -313,7 +301,6 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: CustomSlideContextTile(
-                manager: mockManager,
                 controller: controller,
                 leadingActions: leadingActions,
                 actionExecutionThreshold: 100.0,
@@ -347,7 +334,6 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: CustomSlideContextTile(
-                manager: SlidableManager(),
                 controller: controller,
                 leadingActions: leadingActions,
                 title: const Text('Test Child'),
@@ -390,7 +376,6 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: CustomSlideContextTile(
-                manager: SlidableManager(),
                 controller: controller,
                 leadingActions: leadingActions,
                 trailingActions: trailingActions,
@@ -428,7 +413,6 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: CustomSlideContextTile(
-                manager: mockManager,
                 controller: controller,
                 leadingActions: leadingActions,
                 title: const Text('Test Child'),
@@ -463,7 +447,6 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: CustomSlideContextTile(
-                manager: mockManager,
                 controller: controller,
                 leadingActions: leadingActions,
                 title: const Text('Test Child'),
@@ -504,7 +487,6 @@ void main() {
             MaterialApp(
               home: Scaffold(
                 body: CustomSlideContextTile(
-                  manager: mockManager,
                   controller: controller,
                   revealAnimationType: animationType,
                   leadingActions: [
@@ -559,7 +541,6 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: CustomSlideContextTile.withContextMenu(
-                manager: mockManager,
                 leadingActions: actions,
                 title: const Text('Test Child'),
               ),
@@ -590,7 +571,6 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: CustomSlideContextTile(
-                manager: mockManager,
                 leadingActions: actions,
                 title: const Text('Test Child'),
               ),
@@ -615,7 +595,6 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: CustomSlideContextTile(
-                manager: mockManager,
                 controller: controller,
                 onTap: () => tapped = true,
                 leadingActions: [
@@ -643,7 +622,6 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: CustomSlideContextTile(
-                manager: mockManager,
                 controller: controller,
                 onTap: () => tapped = true,
                 leadingActions: [
@@ -678,7 +656,6 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: CustomSlideContextTile(
-                manager: mockManager,
                 controller: controller,
                 onTap: onTap,
                 leadingActions: [
