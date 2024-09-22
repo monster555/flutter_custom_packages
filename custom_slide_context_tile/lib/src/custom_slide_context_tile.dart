@@ -18,7 +18,6 @@ class CustomSlideContextTile extends StatefulWidget {
   /// a long-press context menu. This is useful for scenarios where
   /// you want to maintain a simpler interaction model.
   ///
-  /// [manager] is required to coordinate with other slidables.
   /// [title] is the primary content of the tile, typically a text widget.
   /// [subtitle] is optional additional content displayed below the title.
   /// [leadingActions] and [trailingActions] define the sliding actions.
@@ -29,7 +28,6 @@ class CustomSlideContextTile extends StatefulWidget {
   /// [onTap] is called when the tile is tapped (when not sliding).
   const CustomSlideContextTile({
     super.key,
-    required this.manager,
     required this.title,
     this.subtitle,
     this.leadingActions = const [],
@@ -52,7 +50,6 @@ class CustomSlideContextTile extends StatefulWidget {
   /// [enableContextMenu] is set to true.
   const CustomSlideContextTile.withContextMenu({
     super.key,
-    required this.manager,
     required this.title,
     this.subtitle,
     this.leadingActions = const [],
@@ -97,10 +94,6 @@ class CustomSlideContextTile extends StatefulWidget {
   /// An optional controller to manage the slidable state externally.
   /// If provided, this allows for programmatic control of the slidable.
   final CustomSlidableController? controller;
-
-  /// The manager responsible for coordinating multiple slidable widgets.
-  /// This ensures that only one slidable is open at a time across the app.
-  final SlidableManager manager;
 
   /// Determines whether the context menu is enabled for this tile.
   /// When true, a long press on the tile will reveal a context menu.
@@ -264,9 +257,9 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
           setState(() {
             _offset = newOffset;
           });
-
-          _internalController.updateState(_offset != 0.0);
         }
+
+        _internalController.updateOffset(_offset);
 
         if (_offset == 0) {
           _shouldExpandDefaultAction = false;
@@ -294,19 +287,13 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
   ///
   /// This method is called when the slidable needs to reveal its leading actions,
   /// either programmatically or in response to a user interaction.
-  void _openLeading() {
-    widget.manager.open(widget.controller!);
-    animateToOffset(maxLeadingOffset);
-  }
+  void _openLeading() => animateToOffset(maxLeadingOffset);
 
   /// Opens the trailing (right) actions.
   ///
   /// This method is called when the slidable needs to reveal its trailing actions,
   /// either programmatically or in response to a user interaction.
-  void _openTrailing() {
-    widget.manager.open(widget.controller!);
-    animateToOffset(-maxTrailingOffset);
-  }
+  void _openTrailing() => animateToOffset(-maxTrailingOffset);
 
   /// Closes the slidable, returning it to its initial state.
   ///
@@ -406,11 +393,6 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
       defaultTrailingAction?.onPressed,
       _actionExecuted,
     );
-
-    // Notify the manager if the slidable is opened
-    if (targetOffset != 0.0) {
-      widget.manager.open(_internalController);
-    }
 
     animateToOffset(targetOffset);
   }
