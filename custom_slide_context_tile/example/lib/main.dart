@@ -36,13 +36,11 @@ class _MyHomePageState extends State<MyHomePage> {
   void logAction(String action) => log(action, name: 'action');
 
   late CustomSlidableController controller;
-  late SlidableManager manager;
 
   @override
   void initState() {
     super.initState();
     controller = CustomSlidableController();
-    manager = SlidableManager();
   }
 
   List<MenuAction> get leadingActions => [
@@ -137,7 +135,6 @@ class _MyHomePageState extends State<MyHomePage> {
             const SizedBox(height: 16.0),
             CustomSlideContextTile(
               controller: controller,
-              manager: manager,
               leadingActions: [leadingActions.last],
               trailingActions: trailingActions.take(3).toList(),
               revealAnimationType: RevealAnimationType.parallax,
@@ -146,7 +143,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             const SizedBox(height: 8.0),
             CustomSlideContextTile(
-              manager: manager,
               leadingActions: leadingActions,
               trailingActions: trailingActions,
               revealAnimationType: RevealAnimationType.pull,
@@ -155,7 +151,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             const SizedBox(height: 8.0),
             CustomSlideContextTile(
-              manager: manager,
               leadingActions: leadingActions,
               revealAnimationType: RevealAnimationType.reveal,
               title: const Text('Swipe me, no trailing actions'),
@@ -163,7 +158,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ...List<Widget>.generate(
               15,
               (e) => CustomSlideContextTile(
-                manager: manager,
                 leadingActions: leadingActions,
                 trailingActions: trailingActions,
                 revealAnimationType: RevealAnimationType.reveal,
