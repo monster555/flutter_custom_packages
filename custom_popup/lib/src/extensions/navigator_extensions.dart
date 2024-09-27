@@ -38,21 +38,4 @@ extension NavigatorX on BuildContext {
   /// context.pop('Some result'); // Pop with a result
   /// ```
   void pop<T extends Object?>([T? result]) => Navigator.of(this).pop(result);
-
-  /// Determines if the current navigation stack has at least one route below the current route.
-  ///
-  /// This getter checks the navigation stack to see if there are any routes below the current route,
-  /// indicating whether the user can navigate back to a previous route using the [Navigator.pop] method.
-  /// If `true`, the navigation stack contains at least one route that can be popped, allowing for
-  /// back navigation. If `false`, the current route is the only route in the stack, and calling
-  /// [Navigator.pop] will not have any effect.
-  ///
-  /// ```dart
-  /// if (context.canPop) {
-  ///   context.pop();
-  /// } else {
-  ///   // Handle the case where there is no previous route to pop
-  /// }
-  /// ```
-  bool get canPop => Navigator.of(this).canPop();
 }
