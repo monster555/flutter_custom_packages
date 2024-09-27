@@ -1,3 +1,4 @@
+import 'package:custom_popup/custom_popup.dart';
 import 'package:flutter/material.dart';
 
 /// A widget that represents a scrollable menu content area.
@@ -26,8 +27,8 @@ class MenuContent extends StatelessWidget {
     this.maxHeight,
   });
 
-  /// A list of widgets to be displayed within the menu content area.
-  final List<Widget> actions;
+  /// A list of [MenuElement] to be displayed within the menu content area.
+  final List<MenuElement> actions;
 
   /// The minimum width of the menu content. If specified, the width of the content
   /// area will not be less than this value.
@@ -44,6 +45,20 @@ class MenuContent extends StatelessWidget {
 
   /// The default padding for the menu content.
   static const EdgeInsets _defaultPadding = EdgeInsets.all(8.0);
+
+  /// The default border radius for the menu content.
+  ///
+  /// This getter is exposed for testing purposes to allow tests to verify
+  /// the border radius used in the menu content.
+  @visibleForTesting
+  static BorderRadius get defaultBorderRadius => _defaultBorderRadius;
+
+  /// The default padding for the menu content.
+  ///
+  /// This getter is exposed for testing purposes to allow tests to verify
+  /// the padding used in the menu content.
+  @visibleForTesting
+  static EdgeInsets get defaultPadding => _defaultPadding;
 
   @override
   Widget build(BuildContext context) {
