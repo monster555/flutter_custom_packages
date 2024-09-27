@@ -255,10 +255,10 @@ class CustomPopupRoute extends PopupRoute<VoidCallback?> {
       calculatePopupPosition();
     });
 
-    // if (context.mounted) {
-    //   // Use the Navigator to pop the top route if it's a PopupRoute
-    //   Navigator.of(context).popUntil((route) => route is! PopupRoute);
-    // }
+    if (context.mounted) {
+      // Use the Navigator to pop the top route if it's a PopupRoute
+      Navigator.of(context).popUntil((route) => route is! PopupRoute);
+    }
   }
 
   @override
