@@ -15,11 +15,10 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const { context: githubContext, github } = require('@actions/github');
-            const pr = githubContext.payload.pull_request;
+            const pr = context.payload.pull_request;
             const commits = await github.pulls.listCommits({
-              owner: githubContext.repo.owner,
-              repo: githubContext.repo.repo,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
               pull_number: pr.number,
             });
 
@@ -43,8 +42,8 @@ jobs:
 
             if (labels.size > 0) {
               await github.issues.addLabels({
-                owner: githubContext.repo.owner,
-                repo: githubContext.repo.repo,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
                 issue_number: pr.number,
                 labels: Array.from(labels),
               });
