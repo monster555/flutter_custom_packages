@@ -7,43 +7,50 @@ on:
 jobs:
   label:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2.4.2
+        uses: actions/checkout@v3
 
       - name: Label PR based on commit messages
         uses: actions/github-script@v6
         with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
+            const { owner, repo } = context.repo;
             const pr = context.payload.pull_request;
-            const commits = await github.pulls.listCommits({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
+            
+            const commits = await github.rest.pulls.listCommits({
+              owner,
+              repo,
               pull_number: pr.number,
             });
 
             const labels = new Set();
 
             commits.data.forEach(commit => {
-              if (commit.commit.message.startsWith('feat') || commit.commit.message.startsWith('feature')) {
+              const message = commit.commit.message.toLowerCase();
+              if (message.startsWith('feat') || message.startsWith('feature')) {
                 labels.add('feature');
-              } else if (commit.commit.message.startsWith('fix')) {
+              } else if (message.startsWith('fix')) {
                 labels.add('bug');
-              } else if (commit.commit.message.startsWith('chore')) {
+              } else if (message.startsWith('chore')) {
                 labels.add('chore');
-              } else if (commit.commit.message.startsWith('docs')) {
+              } else if (message.startsWith('docs')) {
                 labels.add('documentation');
-              } else if (commit.commit.message.startsWith('refactor')) {
+              } else if (message.startsWith('refactor')) {
                 labels.add('refactor');
-              } else if (commit.commit.message.startsWith('test')) {
+              } else if (message.startsWith('test')) {
                 labels.add('test');
               }
             });
 
             if (labels.size > 0) {
-              await github.issues.addLabels({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
+              await github.rest.issues.addLabels({
+                owner,
+                repo,
                 issue_number: pr.number,
                 labels: Array.from(labels),
               });
