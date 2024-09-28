@@ -40,7 +40,7 @@ void main() {
     });
 
     group('Actions', () {
-      testWidgets('throws assertion error when no valid actions',
+      testWidgets('returns child when no valid actions',
           (WidgetTester tester) async {
         final actions = [
           MenuAction(
@@ -60,14 +60,11 @@ void main() {
           ),
         );
 
-        // Check if there's an error in the console output
-        expect(tester.takeException(), isAssertionError);
-
         // Verify that the CupertinoContextMenu widget is not in the tree
         expect(find.byType(CupertinoContextMenu), findsNothing);
 
         // Verify that the child widget is not in the tree either
-        expect(find.text('Test Child'), findsNothing);
+        expect(find.text('Test Child'), findsOneWidget);
       });
 
       testWidgets('renders CupertinoContextMenu with valid actions',
