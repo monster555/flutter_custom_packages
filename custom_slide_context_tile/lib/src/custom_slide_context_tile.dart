@@ -20,6 +20,7 @@ class CustomSlideContextTile extends StatefulWidget {
   ///
   /// [title] is the primary content of the tile, typically a text widget.
   /// [subtitle] is optional additional content displayed below the title.
+  /// [leading] and [trailing] define the leading and trailing widgets.
   /// [leadingActions] and [trailingActions] define the sliding actions.
   /// [actionExecutionThreshold] sets the sensitivity for executing actions.
   /// [revealAnimationType] determines how actions are animated into view.
@@ -30,6 +31,8 @@ class CustomSlideContextTile extends StatefulWidget {
     super.key,
     required this.title,
     this.subtitle,
+    this.leading,
+    this.trailing,
     this.leadingActions = const [],
     this.trailingActions = const [],
     this.actionExecutionThreshold = 100.0,
@@ -52,6 +55,8 @@ class CustomSlideContextTile extends StatefulWidget {
     super.key,
     required this.title,
     this.subtitle,
+    this.leading,
+    this.trailing,
     this.leadingActions = const [],
     this.trailingActions = const [],
     this.actionExecutionThreshold = 100.0,
@@ -73,6 +78,14 @@ class CustomSlideContextTile extends StatefulWidget {
   /// When provided, it adds a second line of text below the [title],
   /// offering additional context or information about the list item.
   final Widget? subtitle;
+
+  /// An optional leading widget displayed on the left side of the tile. This is
+  /// typically an [Icon] or [Image] widget.
+  final Widget? leading;
+
+  /// An optional trailing widget displayed on the right side of the tile. This is
+  /// usually a right chevron icon (e.g. CupertinoListTileChevron), or an Icon.
+  final Widget? trailing;
 
   /// Actions to be displayed on the leading (left) side when sliding.
   /// These actions are revealed when the user slides the tile to the right.
@@ -219,6 +232,8 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           title: widget.title,
           subtitle: widget.subtitle,
+          leading: widget.leading,
+          trailing: widget.trailing,
           onTap: _internalController.isOpen ? null : widget.onTap,
         ),
       );
