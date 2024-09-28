@@ -1,0 +1,51 @@
+name: "Label PRs based on commit messages"
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2.4.2
+
+      - name: Label PR based on commit messages
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { context, github } = require('@actions/github');
+            const pr = context.payload.pull_request;
+            const commits = await github.pulls.listCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+            });
+
+            const labels = new Set();
+
+            commits.data.forEach(commit => {
+              if (commit.commit.message.startsWith('feat') || commit.commit.message.startsWith('feature')) {
+                labels.add('feature');
+              } else if (commit.commit.message.startsWith('fix')) {
+                labels.add('bug');
+              } else if (commit.commit.message.startsWith('chore')) {
+                labels.add('chore');
+              } else if (commit.commit.message.startsWith('docs')) {
+                labels.add('documentation');
+              } else if (commit.commit.message.startsWith('refactor')) {
+                labels.add('refactor');
+              } else if (commit.commit.message.startsWith('test')) {
+                labels.add('test');
+              }
+            });
+
+            if (labels.size > 0) {
+              await github.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                labels: Array.from(labels),
+              });
+            }
