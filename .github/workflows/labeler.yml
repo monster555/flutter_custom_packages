@@ -1,4 +1,4 @@
-name: "Label PRs based on commit messages"
+name: "Automated PR Classification"
 
 on:
   pull_request:
@@ -14,7 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Label PR based on commit messages
+      - name: Analyze commits and apply labels
         uses: actions/github-script@v6
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
