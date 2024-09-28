@@ -1,4 +1,5 @@
 import 'package:custom_popup/src/extensions/navigator_extensions.dart';
+import 'package:custom_popup/src/popup/custom_popup.dart';
 import 'package:custom_popup/src/popup/custom_popup_content.dart';
 import 'package:custom_popup/src/popup/custom_popup_route.dart';
 import 'package:custom_popup/src/popup/size_change_listener.dart';
@@ -417,6 +418,144 @@ main() {
 
       // Verify that the popup is closed
       expect(find.byType(CustomPopupContent), findsNothing);
+    });
+
+    testWidgets('positions correctly at viewport edges',
+        (WidgetTester tester) async {
+      // Top edge test
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Align(
+              alignment: Alignment.topCenter,
+              child: CustomPopup(
+                showArrow: false,
+                content:
+                    const SizedBox(height: 600, child: Text('Tall Content')),
+                child: Container(height: 50, color: Colors.blue),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(Container).first);
+      await tester.pumpAndSettle();
+
+      // Bottom edge test
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Align(
+              alignment: Alignment.bottomCenter,
+              child: CustomPopup(
+                showArrow: false,
+                content:
+                    const SizedBox(height: 700, child: Text('Tall Content')),
+                child: Container(height: 50, color: Colors.blue),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(Container).first);
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('handles size changes correctly', (WidgetTester tester) async {
+      Size currentSize = const Size(300, 300);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return MediaQuery(
+                data: MediaQueryData(size: currentSize),
+                child: Column(
+                  children: [
+                    CustomPopup(
+                      content: const Text('Popup Content'),
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => setState(() {}),
+                      child: const Text('Change Size'),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(Container));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Popup Content'), findsOneWidget);
+
+      final buttonFinder = find.byType(ElevatedButton);
+
+      currentSize = const Size(200, 200);
+
+      // Simulate a size change by pressing the button
+      await tester.tap(buttonFinder);
+
+      await tester.pumpAndSettle();
+
+      // Verify that the popup is closed after resize
+      expect(find.text('Popup Content'), findsNothing);
+    });
+
+    testWidgets('Popup handles content size changes',
+        (WidgetTester tester) async {
+      late StateSetter setState;
+      bool isExpanded = false;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setStateInner) {
+              setState = setStateInner;
+              return Scaffold(
+                body: Center(
+                  child: CustomPopup(
+                    content: AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      height: isExpanded ? 200 : 100,
+                      child: const Text('Resizable Content'),
+                    ),
+                    child: Container(
+                      width: 50,
+                      height: 50,
+                      color: Colors.blue,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(Container));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Resizable Content'), findsOneWidget);
+
+      // Change content size
+      setState(() {
+        isExpanded = true;
+      });
+      await tester.pumpAndSettle();
+
+      // Verify that the popup is still open after content resize
+      expect(find.text('Resizable Content'), findsOneWidget);
     });
   });
 }
