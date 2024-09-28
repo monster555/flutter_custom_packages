@@ -17,6 +17,33 @@ enum HapticFeedbackStrength {
   heavy,
 }
 
+/// A wrapper class for the HapticFeedback methods.
+///
+/// This class provides methods to trigger different strengths of haptic feedback.
+/// It is used to facilitate testing by allowing the haptic feedback methods to be
+/// mocked.
+class HapticFeedbackWrapper {
+  const HapticFeedbackWrapper();
+
+  /// Triggers a light haptic feedback.
+  ///
+  /// This method calls [HapticFeedback.lightImpact] to generate a light impact
+  /// feedback. It is typically used for subtle feedback on user interactions.
+  void lightImpact() => HapticFeedback.lightImpact();
+
+  /// Triggers a medium haptic feedback.
+  ///
+  /// This method calls [HapticFeedback.mediumImpact] to generate a medium impact
+  /// feedback. It is typically used for standard feedback on user interactions.
+  void mediumImpact() => HapticFeedback.mediumImpact();
+
+  /// Triggers a heavy haptic feedback.
+  ///
+  /// This method calls [HapticFeedback.heavyImpact] to generate a heavy impact
+  /// feedback. It is typically used for strong feedback on user interactions.
+  void heavyImpact() => HapticFeedback.heavyImpact();
+}
+
 /// Triggers haptic feedback with the specified strength on iOS devices.
 ///
 /// This function provides a way to generate tactile feedback for user interactions.
@@ -35,21 +62,26 @@ enum HapticFeedbackStrength {
 /// triggerHapticFeedback(HapticFeedbackStrength.light);
 /// ```
 ///
+/// // Trigger heavy haptic feedback
+/// triggerHapticFeedback(HapticFeedbackStrength.heavy);
+/// ```
+///
 /// Note: This function has no effect on non-iOS platforms. If you need to
 /// support haptic feedback on other platforms, you should extend this function
 /// or use a more platform-agnostic approach.
 void triggerHapticFeedback(
-    [HapticFeedbackStrength strength = HapticFeedbackStrength.medium]) {
+    [HapticFeedbackStrength strength = HapticFeedbackStrength.medium,
+    HapticFeedbackWrapper hapticFeedback = const HapticFeedbackWrapper()]) {
   if (defaultTargetPlatform == TargetPlatform.iOS) {
     switch (strength) {
       case HapticFeedbackStrength.light:
-        HapticFeedback.lightImpact();
+        hapticFeedback.lightImpact();
         break;
       case HapticFeedbackStrength.medium:
-        HapticFeedback.mediumImpact();
+        hapticFeedback.mediumImpact();
         break;
       case HapticFeedbackStrength.heavy:
-        HapticFeedback.heavyImpact();
+        hapticFeedback.heavyImpact();
         break;
     }
   }
