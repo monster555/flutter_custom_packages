@@ -1,0 +1,82 @@
+name: "PR Classification"
+
+# This workflow automatically classifies pull requests by applying labels based on:
+# 1. The type of change (feature, bug fix, chore, etc.) derived from commit messages.
+# 2. The specific package being modified (custom_popup, custom_slide_context_tile, or general).
+#
+# It runs on pull request events (opened, synchronize, reopened) to ensure labels are up-to-date.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  classify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Classify PR and apply labels
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const { owner, repo } = context.repo;
+            const pr = context.payload.pull_request;
+            
+            // Get the list of changed files
+            const { data: changedFiles } = await github.rest.pulls.listFiles({
+              owner,
+              repo,
+              pull_number: pr.number,
+            });
+            
+            const labels = new Set();
+            
+            // Check commit messages for conventional commit types
+            const commits = await github.rest.pulls.listCommits({
+              owner,
+              repo,
+              pull_number: pr.number,
+            });
+
+            commits.data.forEach(commit => {
+              const message = commit.commit.message.toLowerCase();
+              if (message.startsWith('feat') || message.startsWith('feature')) {
+                labels.add('feature');
+              } else if (message.startsWith('fix')) {
+                labels.add('bug');
+              } else if (message.startsWith('chore')) {
+                labels.add('chore');
+              } else if (message.startsWith('docs')) {
+                labels.add('documentation');
+              } else if (message.startsWith('refactor')) {
+                labels.add('refactor');
+              } else if (message.startsWith('test')) {
+                labels.add('test');
+              }
+            });
+            
+            // Check changed files for package-specific changes
+            changedFiles.forEach(file => {
+              if (file.filename.startsWith('custom_popup/')) {
+                labels.add('package: custom_popup');
+              } else if (file.filename.startsWith('custom_slide_context_tile/')) {
+                labels.add('package: custom_slide_context_tile');
+              } else {
+                labels.add('general');
+              }
+            });
+
+            if (labels.size > 0) {
+              await github.rest.issues.addLabels({
+                owner,
+                repo,
+                issue_number: pr.number,
+                labels: Array.from(labels),
+              });
+            }
