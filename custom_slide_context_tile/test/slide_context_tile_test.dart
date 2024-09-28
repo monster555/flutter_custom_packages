@@ -138,6 +138,7 @@ void main() {
         expect(targetConstrainedBox.constraints.minHeight, 48);
       });
 
+      // Test for using correct background color
       testWidgets('uses correct background color', (WidgetTester tester) async {
         await tester.pumpWidget(
           MaterialApp(
@@ -162,6 +163,166 @@ void main() {
         expect(listTile.backgroundColor, isNotNull);
         expect(listTile.backgroundColor,
             Theme.of(tester.element(slidableFinder)).scaffoldBackgroundColor);
+      });
+
+      // Test for rendering leading widget when defined
+      testWidgets('render leading when defined', (WidgetTester tester) async {
+        const leading = Icon(Icons.home);
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CustomSlideContextTile(
+                controller: controller,
+                leadingActions: [
+                  MenuAction(
+                    label: 'Action',
+                    icon: Icons.star,
+                    onPressed: () {},
+                  )
+                ],
+                leading: leading,
+                title: const Text('Test'),
+              ),
+            ),
+          ),
+        );
+
+        final listTile =
+            tester.widget<CupertinoListTile>(find.byType(CupertinoListTile));
+        expect(listTile.leading, isNotNull);
+        expect(listTile.leading, leading);
+
+        expect(
+            find.byWidgetPredicate(
+                (widget) => widget is Icon && widget.icon == leading.icon),
+            findsOneWidget);
+      });
+
+      // Test for rendering trailing widget when defined
+      testWidgets('render trailing when defined', (WidgetTester tester) async {
+        const trailing = Icon(Icons.settings);
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CustomSlideContextTile(
+                controller: controller,
+                leadingActions: [
+                  MenuAction(
+                    label: 'Action',
+                    icon: Icons.star,
+                    onPressed: () {},
+                  )
+                ],
+                trailing: trailing,
+                title: const Text('Test'),
+              ),
+            ),
+          ),
+        );
+
+        final listTile =
+            tester.widget<CupertinoListTile>(find.byType(CupertinoListTile));
+        expect(listTile.trailing, isNotNull);
+        expect(listTile.trailing, trailing);
+
+        expect(
+            find.byWidgetPredicate(
+                (widget) => widget is Icon && widget.icon == trailing.icon),
+            findsOneWidget);
+      });
+
+      // Test for ensuring both leading and trailing widgets are rendered correctly
+      testWidgets('renders both leading and trailing when defined',
+          (WidgetTester tester) async {
+        const leading = Icon(Icons.home);
+        const trailing = Icon(Icons.settings);
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CustomSlideContextTile(
+                controller: controller,
+                leadingActions: [
+                  MenuAction(
+                    label: 'Action',
+                    icon: Icons.star,
+                    onPressed: () {},
+                  )
+                ],
+                leading: leading,
+                trailing: trailing,
+                title: const Text('Test'),
+              ),
+            ),
+          ),
+        );
+
+        final listTile =
+            tester.widget<CupertinoListTile>(find.byType(CupertinoListTile));
+
+        // Ensure leading is rendered
+        expect(listTile.leading, isNotNull);
+        // Validate the correct leading widget
+        expect(listTile.leading, leading);
+
+        // Ensure trailing is rendered
+        expect(listTile.trailing, isNotNull);
+        // Validate the correct trailing widget
+        expect(listTile.trailing, trailing);
+      });
+
+      // Test for ensuring leading is null when not provided
+      testWidgets('leading is null when not defined',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CustomSlideContextTile(
+                controller: controller,
+                leadingActions: [
+                  MenuAction(
+                    label: 'Action',
+                    icon: Icons.star,
+                    onPressed: () {},
+                  )
+                ],
+                title: const Text('Test'),
+              ),
+            ),
+          ),
+        );
+
+        final listTile =
+            tester.widget<CupertinoListTile>(find.byType(CupertinoListTile));
+        // Check if leading is null
+        expect(listTile.leading, isNull);
+      });
+
+      // Test for ensuring trailing is null when not provided
+      testWidgets('trailing is null when not defined',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CustomSlideContextTile(
+                controller: controller,
+                leadingActions: [
+                  MenuAction(
+                    label: 'Action',
+                    icon: Icons.star,
+                    onPressed: () {},
+                  )
+                ],
+                title: const Text('Test'),
+              ),
+            ),
+          ),
+        );
+
+        final listTile =
+            tester.widget<CupertinoListTile>(find.byType(CupertinoListTile));
+        // Check if trailing is null
+        expect(listTile.trailing, isNull);
       });
     });
 
@@ -309,6 +470,9 @@ void main() {
             ),
           ),
         );
+
+        // Assert that the action has not been executed before the drag
+        expect(actionExecuted, isFalse);
 
         final slidableFinder = find.byType(CustomSlideContextTile);
 
@@ -684,6 +848,119 @@ void main() {
 
         await tester.tap(find.byType(CupertinoListTile));
         expect(tapped, isFalse);
+      });
+
+      testWidgets('closes open slidable when another slidable is swiped',
+          (WidgetTester tester) async {
+        final controller1 = CustomSlidableController();
+        final controller2 = CustomSlidableController();
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Column(
+                children: [
+                  CustomSlideContextTile(
+                    controller: controller1,
+                    leadingActions: [
+                      MenuAction(
+                          label: 'Action 1',
+                          icon: Icons.star,
+                          onPressed: () {}),
+                    ],
+                    title: const Text('Slidable 1'),
+                  ),
+                  CustomSlideContextTile(
+                    controller: controller2,
+                    leadingActions: [
+                      MenuAction(
+                          label: 'Action 2',
+                          icon: Icons.home,
+                          onPressed: () {}),
+                    ],
+                    title: const Text('Slidable 2'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        // Open the first slidable
+        await tester.drag(find.text('Slidable 1'), const Offset(200, 0));
+        await tester.pumpAndSettle();
+
+        expect(controller1.isOpen, isTrue);
+        expect(controller2.isOpen, isFalse);
+
+        // Start swiping the second slidable
+        await tester.drag(find.text('Slidable 2'), const Offset(50, 0));
+        await tester.pumpAndSettle();
+
+        // Verify that the first slidable is now closed
+        expect(controller1.isOpen, isFalse);
+
+        // Complete the swipe on the second slidable
+        await tester.drag(find.text('Slidable 2'), const Offset(150, 0));
+        await tester.pumpAndSettle();
+
+        // Verify that the second slidable is now open
+        expect(controller1.isOpen, isFalse);
+        expect(controller2.isOpen, isTrue);
+      });
+
+      testWidgets(
+          'closes open slidable when another slidable is programatically open',
+          (WidgetTester tester) async {
+        final controller1 = CustomSlidableController();
+        final controller2 = CustomSlidableController();
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Column(
+                children: [
+                  CustomSlideContextTile(
+                    controller: controller1,
+                    leadingActions: [
+                      MenuAction(
+                          label: 'Action 1',
+                          icon: Icons.star,
+                          onPressed: () {}),
+                    ],
+                    title: const Text('Slidable 1'),
+                  ),
+                  CustomSlideContextTile(
+                    controller: controller2,
+                    leadingActions: [
+                      MenuAction(
+                          label: 'Action 2',
+                          icon: Icons.home,
+                          onPressed: () {}),
+                    ],
+                    title: const Text('Slidable 2'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        // Open the first slidable
+        // await tester.drag(find.text('Slidable 1'), const Offset(200, 0));
+        controller1.openLeading();
+        await tester.pumpAndSettle();
+
+        expect(controller1.isOpen, isTrue);
+        expect(controller2.isOpen, isFalse);
+
+        // Start swiping the second slidable
+        controller2.openLeading();
+        await tester.pumpAndSettle();
+
+        // Verify that the first slidable is now closed
+        expect(controller1.isOpen, isFalse);
+        expect(controller2.isOpen, isTrue);
       });
     });
   });
