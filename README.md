@@ -1,29 +1,29 @@
 # Flutter Custom Packages
 
-This repository contains two custom Flutter packages:
+This repository contains two custom **Flutter** packages:
 
-1. CustomPopup
-2. CustomSlideContextTile
+1. `CustomPopup`
+2. `CustomSlideContextTile`
 
-Both packages are designed to enhance the user interface and interaction in Flutter applications, with a focus on iOS-style designs.
+These packages are the result of my experimentation and enjoyment in **Flutter** development, designed to improve the user experience in **Flutter** applications.
 
 ## Packages
 
 ### CustomPopup
 
-CustomPopup is a Flutter package that enables developers to integrate animated popups triggered by tapping or long-pressing a child widget. These popups originate from the position of the CustomPopup child widget and feature smooth animations that can align with both Cupertino and Material design languages.
+`CustomPopup` is a **Flutter** package that enables developers to integrate animated popups triggered by tapping or long-pressing a child widget. These popups originate from the position of the `CustomPopup` child widget and feature smooth animations that can align with both Cupertino and Material design languages.
 
 [Learn more about CustomPopup](./custom_popup/README.md)
 
 ### CustomSlideContextTile
 
-CustomSlideContextTile is a Flutter package that enhances list items by adding swipeable leading and trailing actions. It provides a smooth and interactive way to reveal contextual actions for list items, offering an intuitive and space-efficient interface for mobile applications. This versatile package can be adapted to various UI designs and requirements, making it suitable for a wide range of mobile app interfaces.
+`CustomSlideContextTile` is a **Flutter** package that enhances list items by adding swipeable leading and trailing actions. It provides a smooth and interactive way to reveal contextual actions for list items, offering an intuitive and space-efficient interface for mobile applications. This versatile package can be adapted to various UI designs and requirements, making it suitable for a wide range of mobile app interfaces.
 
 [Learn more about CustomSlideContextTile](./custom_slide_context_tile/README.md)
 
 ## Installation
 
-To use these packages in your Flutter project, add the following to your `pubspec.yaml` file:
+To use these packages in your **Flutter** project, add the following to your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
