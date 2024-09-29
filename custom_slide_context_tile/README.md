@@ -27,7 +27,7 @@ Add the following to your `pubspec.yaml` file:
 dependencies:
   custom_slide_context_tile:
     git:
-      url: https://github.com/yourusername/flutter_custom_packages.git
+      url: https://github.com/monster555/flutter_custom_packages.git
       path: custom_slide_context_tile
 ```
 
