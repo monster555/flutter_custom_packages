@@ -133,8 +133,18 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
             const SizedBox(height: 16.0),
+            CustomSlideContextTile.adaptive(
+              leading: const Icon(Icons.star),
+              leadingActions: [leadingActions.last],
+              trailingActions: trailingActions.take(3).toList(),
+              revealAnimationType: RevealAnimationType.parallax,
+              title: const Text('Swipe me - Adaptive'),
+              onTap: () => logAction('Adaptive Parallax tapped...'),
+            ),
+            const SizedBox(height: 8.0),
             CustomSlideContextTile(
               controller: controller,
+              leading: const Icon(Icons.star),
               leadingActions: [leadingActions.last],
               trailingActions: trailingActions.take(3).toList(),
               revealAnimationType: RevealAnimationType.parallax,
