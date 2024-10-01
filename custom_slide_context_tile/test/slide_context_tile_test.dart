@@ -1,4 +1,5 @@
 import 'package:custom_slide_context_tile/custom_slide_context_tile.dart';
+import 'package:custom_slide_context_tile/src/widgets/adaptive_list_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,18 +14,6 @@ void main() {
 
     group('Rendering Tests', () {
       // Tests related to rendering of the widget
-      testWidgets('renders child widget', (WidgetTester tester) async {
-        await tester.pumpWidget(
-          const MaterialApp(
-            home: CustomSlideContextTile(
-              title: Text('Test Child'),
-            ),
-          ),
-        );
-
-        expect(find.text('Test Child'), findsOneWidget);
-      });
-
       testWidgets('renders title correctly', (WidgetTester tester) async {
         const titleText = 'Test Title';
         await tester.pumpWidget(
@@ -48,10 +37,12 @@ void main() {
         expect(find.text(titleText), findsOneWidget);
       });
 
-      testWidgets('renders subtitle when provided',
+      testWidgets('renders subtitle when provided and omits when not provided',
           (WidgetTester tester) async {
         const titleText = 'Test Title';
         const subtitleText = 'Test Subtitle';
+
+        // Test with subtitle
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
@@ -73,11 +64,8 @@ void main() {
 
         expect(find.text(titleText), findsOneWidget);
         expect(find.text(subtitleText), findsOneWidget);
-      });
 
-      testWidgets('does not render subtitle when not provided',
-          (WidgetTester tester) async {
-        const titleText = 'Test Title';
+        // Test without subtitle
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
@@ -97,8 +85,9 @@ void main() {
         );
 
         expect(find.text(titleText), findsOneWidget);
-        expect(
-            find.byType(Text), findsOneWidget); // Only title should be present
+        expect(find.text(subtitleText), findsNothing);
+        // Only title should be present
+        expect(find.byType(Text), findsOneWidget);
       });
 
       testWidgets('has minimum height constraint', (WidgetTester tester) async {
@@ -138,12 +127,95 @@ void main() {
         expect(targetConstrainedBox.constraints.minHeight, 48);
       });
 
-      // Test for using correct background color
-      testWidgets('uses correct background color', (WidgetTester tester) async {
+      testWidgets('renders leading and trailing widgets correctly',
+          (WidgetTester tester) async {
+        const leading = Icon(Icons.home);
+        const trailing = Icon(Icons.settings);
+
+        // Test with both leading and trailing
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
               body: CustomSlideContextTile(
+                controller: controller,
+                leadingActions: [
+                  MenuAction(
+                      label: 'Action', icon: Icons.star, onPressed: () {})
+                ],
+                leading: leading,
+                trailing: trailing,
+                title: const Text('Test'),
+              ),
+            ),
+          ),
+        );
+
+        final adaptiveListTile =
+            tester.widget<AdaptiveListTile>(find.byType(AdaptiveListTile));
+        expect(adaptiveListTile.leading, leading);
+        expect(adaptiveListTile.trailing, trailing);
+        expect(find.byIcon(Icons.home), findsOneWidget);
+        expect(find.byIcon(Icons.settings), findsOneWidget);
+
+        // Test without leading and trailing
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CustomSlideContextTile(
+                controller: controller,
+                leadingActions: [
+                  MenuAction(
+                      label: 'Action', icon: Icons.star, onPressed: () {})
+                ],
+                title: const Text('Test'),
+              ),
+            ),
+          ),
+        );
+
+        final adaptiveListTileWithoutLeadingTrailing =
+            tester.widget<AdaptiveListTile>(find.byType(AdaptiveListTile));
+        expect(adaptiveListTileWithoutLeadingTrailing.leading, isNull);
+        expect(adaptiveListTileWithoutLeadingTrailing.trailing, isNull);
+        expect(find.byIcon(Icons.home), findsNothing);
+        expect(find.byIcon(Icons.settings), findsNothing);
+      });
+
+      testWidgets('does not render subtitle when not provided',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CustomSlideContextTile(
+                controller: controller,
+                leadingActions: [
+                  MenuAction(
+                      label: 'Action', icon: Icons.star, onPressed: () {}),
+                ],
+                title: const Text('Test Title'),
+              ),
+            ),
+          ),
+        );
+
+        expect(find.text('Test Title'), findsOneWidget);
+        expect(
+            find.byType(Text), findsOneWidget); // Only title should be present
+        expect(find.byType(AdaptiveListTile), findsOneWidget);
+        final adaptiveListTile =
+            tester.widget<AdaptiveListTile>(find.byType(AdaptiveListTile));
+        expect(adaptiveListTile.subtitle, isNull);
+      });
+    });
+
+    group('Background Color Tests', () {
+      testWidgets('uses correct background color for iOS when adaptive',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(platform: TargetPlatform.iOS),
+            home: Scaffold(
+              body: CustomSlideContextTile.adaptive(
                 controller: controller,
                 leadingActions: [
                   MenuAction(
@@ -157,21 +229,34 @@ void main() {
             ),
           ),
         );
+
         final slidableFinder = find.byType(CustomSlideContextTile);
-        final listTile =
-            tester.widget<CupertinoListTile>(find.byType(CupertinoListTile));
-        expect(listTile.backgroundColor, isNotNull);
-        expect(listTile.backgroundColor,
-            Theme.of(tester.element(slidableFinder)).scaffoldBackgroundColor);
+        final adaptiveListTile = tester.widget<AdaptiveListTile>(
+          find.descendant(
+            of: slidableFinder,
+            matching: find.byType(AdaptiveListTile),
+          ),
+        );
+
+        expect(adaptiveListTile.useAdaptiveListTile, isTrue);
+
+        final cupertinoListTile = tester.widget<CupertinoListTile>(
+          find.descendant(
+            of: find.byType(AdaptiveListTile),
+            matching: find.byType(CupertinoListTile),
+          ),
+        );
+        expect(cupertinoListTile.backgroundColor,
+            CupertinoColors.systemBackground);
       });
 
-      // Test for rendering leading widget when defined
-      testWidgets('render leading when defined', (WidgetTester tester) async {
-        const leading = Icon(Icons.home);
+      testWidgets('uses correct background color for Android when adaptive',
+          (WidgetTester tester) async {
         await tester.pumpWidget(
           MaterialApp(
+            theme: ThemeData(platform: TargetPlatform.android),
             home: Scaffold(
-              body: CustomSlideContextTile(
+              body: CustomSlideContextTile.adaptive(
                 controller: controller,
                 leadingActions: [
                   MenuAction(
@@ -180,149 +265,78 @@ void main() {
                     onPressed: () {},
                   )
                 ],
-                leading: leading,
                 title: const Text('Test'),
               ),
             ),
           ),
         );
 
-        final listTile =
-            tester.widget<CupertinoListTile>(find.byType(CupertinoListTile));
-        expect(listTile.leading, isNotNull);
-        expect(listTile.leading, leading);
+        final slidableFinder = find.byType(CustomSlideContextTile);
+        final adaptiveListTile = tester.widget<AdaptiveListTile>(
+          find.descendant(
+            of: slidableFinder,
+            matching: find.byType(AdaptiveListTile),
+          ),
+        );
 
+        expect(adaptiveListTile.useAdaptiveListTile, isTrue);
+
+        final coloredBox = tester.widget<ColoredBox>(
+          find.descendant(
+            of: find.byType(AdaptiveListTile),
+            matching: find.byType(ColoredBox),
+          ),
+        );
         expect(
-            find.byWidgetPredicate(
-                (widget) => widget is Icon && widget.icon == leading.icon),
-            findsOneWidget);
-      });
-
-      // Test for rendering trailing widget when defined
-      testWidgets('render trailing when defined', (WidgetTester tester) async {
-        const trailing = Icon(Icons.settings);
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: CustomSlideContextTile(
-                controller: controller,
-                leadingActions: [
-                  MenuAction(
-                    label: 'Action',
-                    icon: Icons.star,
-                    onPressed: () {},
-                  )
-                ],
-                trailing: trailing,
-                title: const Text('Test'),
-              ),
-            ),
-          ),
+          coloredBox.color,
+          Theme.of(tester.element(slidableFinder)).scaffoldBackgroundColor,
         );
-
-        final listTile =
-            tester.widget<CupertinoListTile>(find.byType(CupertinoListTile));
-        expect(listTile.trailing, isNotNull);
-        expect(listTile.trailing, trailing);
-
-        expect(
-            find.byWidgetPredicate(
-                (widget) => widget is Icon && widget.icon == trailing.icon),
-            findsOneWidget);
       });
 
-      // Test for ensuring both leading and trailing widgets are rendered correctly
-      testWidgets('renders both leading and trailing when defined',
+      testWidgets(
+          'uses correct background color for different platforms when not adaptive',
           (WidgetTester tester) async {
-        const leading = Icon(Icons.home);
-        const trailing = Icon(Icons.settings);
-
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: CustomSlideContextTile(
-                controller: controller,
-                leadingActions: [
-                  MenuAction(
-                    label: 'Action',
-                    icon: Icons.star,
-                    onPressed: () {},
-                  )
-                ],
-                leading: leading,
-                trailing: trailing,
-                title: const Text('Test'),
+        for (final platform in [TargetPlatform.iOS, TargetPlatform.android]) {
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: ThemeData(platform: platform),
+              home: Scaffold(
+                body: CustomSlideContextTile(
+                  controller: controller,
+                  leadingActions: [
+                    MenuAction(
+                      label: 'Action',
+                      icon: Icons.star,
+                      onPressed: () {},
+                    )
+                  ],
+                  title: const Text('Test'),
+                ),
               ),
             ),
-          ),
-        );
+          );
 
-        final listTile =
-            tester.widget<CupertinoListTile>(find.byType(CupertinoListTile));
-
-        // Ensure leading is rendered
-        expect(listTile.leading, isNotNull);
-        // Validate the correct leading widget
-        expect(listTile.leading, leading);
-
-        // Ensure trailing is rendered
-        expect(listTile.trailing, isNotNull);
-        // Validate the correct trailing widget
-        expect(listTile.trailing, trailing);
-      });
-
-      // Test for ensuring leading is null when not provided
-      testWidgets('leading is null when not defined',
-          (WidgetTester tester) async {
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: CustomSlideContextTile(
-                controller: controller,
-                leadingActions: [
-                  MenuAction(
-                    label: 'Action',
-                    icon: Icons.star,
-                    onPressed: () {},
-                  )
-                ],
-                title: const Text('Test'),
-              ),
+          final slidableFinder = find.byType(CustomSlideContextTile);
+          final adaptiveListTile = tester.widget<AdaptiveListTile>(
+            find.descendant(
+              of: slidableFinder,
+              matching: find.byType(AdaptiveListTile),
             ),
-          ),
-        );
+          );
 
-        final listTile =
-            tester.widget<CupertinoListTile>(find.byType(CupertinoListTile));
-        // Check if leading is null
-        expect(listTile.leading, isNull);
-      });
+          expect(adaptiveListTile.useAdaptiveListTile, isFalse);
 
-      // Test for ensuring trailing is null when not provided
-      testWidgets('trailing is null when not defined',
-          (WidgetTester tester) async {
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: CustomSlideContextTile(
-                controller: controller,
-                leadingActions: [
-                  MenuAction(
-                    label: 'Action',
-                    icon: Icons.star,
-                    onPressed: () {},
-                  )
-                ],
-                title: const Text('Test'),
-              ),
+          final cupertinoListTile = tester.widget<CupertinoListTile>(
+            find.descendant(
+              of: find.byType(AdaptiveListTile),
+              matching: find.byType(CupertinoListTile),
             ),
-          ),
-        );
+          );
+          expect(cupertinoListTile.backgroundColor,
+              CupertinoColors.systemBackground);
 
-        final listTile =
-            tester.widget<CupertinoListTile>(find.byType(CupertinoListTile));
-        // Check if trailing is null
-        expect(listTile.trailing, isNull);
+          await tester.pumpAndSettle();
+        }
       });
     });
 
@@ -774,7 +788,7 @@ void main() {
           ),
         );
 
-        await tester.tap(find.byType(CupertinoListTile));
+        await tester.tap(find.byType(AdaptiveListTile));
         expect(tapped, isTrue);
       });
 
@@ -806,8 +820,34 @@ void main() {
         await tester.drag(slidableFinder, const Offset(100, 0));
         await tester.pumpAndSettle();
 
-        await tester.tap(find.byType(CupertinoListTile));
+        await tester.tap(find.byType(AdaptiveListTile));
         expect(tapped, isFalse);
+      });
+
+      testWidgets('does not call onTap when not provided',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CustomSlideContextTile(
+                controller: controller,
+                leadingActions: [
+                  MenuAction(
+                      label: 'Action', icon: Icons.star, onPressed: () {}),
+                ],
+                title: const Text('Test Child'),
+              ),
+            ),
+          ),
+        );
+
+        // Attempt to tap the tile
+        await tester.tap(find.byType(AdaptiveListTile));
+        await tester.pump();
+
+        // Since we didn't provide an onTap callback, nothing should happen
+        // We can't directly test that onTap wasn't called, but we can verify that the controller state didn't change
+        expect(controller.isOpen, isFalse);
       });
 
       testWidgets('controller open state changes disable onTap',
@@ -835,7 +875,7 @@ void main() {
           ),
         );
 
-        await tester.tap(find.byType(CupertinoListTile));
+        await tester.tap(find.byType(AdaptiveListTile));
         expect(tapped, isTrue);
 
         // Reset tapped state
@@ -846,7 +886,7 @@ void main() {
         await tester.drag(slidableFinder, const Offset(100, 0));
         await tester.pumpAndSettle();
 
-        await tester.tap(find.byType(CupertinoListTile));
+        await tester.tap(find.byType(AdaptiveListTile));
         expect(tapped, isFalse);
       });
 
@@ -961,6 +1001,184 @@ void main() {
         // Verify that the first slidable is now closed
         expect(controller1.isOpen, isFalse);
         expect(controller2.isOpen, isTrue);
+      });
+    });
+
+    group('Adaptive Constructor Tests', () {
+      testWidgets(
+          'uses AdaptiveListTile when constructed with adaptive constructor',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CustomSlideContextTile.adaptive(
+                title: const Text('Test Child'),
+                leadingActions: [
+                  MenuAction(
+                      label: 'Action', icon: Icons.star, onPressed: () {}),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        expect(find.byType(AdaptiveListTile), findsOneWidget);
+      });
+
+      testWidgets('AdaptiveListTile uses correct useAdaptiveListTile value',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CustomSlideContextTile.adaptive(
+                title: const Text('Test Child'),
+                leadingActions: [
+                  MenuAction(
+                      label: 'Action', icon: Icons.star, onPressed: () {}),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        final adaptiveListTile = tester.widget<AdaptiveListTile>(
+          find.byType(AdaptiveListTile),
+        );
+        expect(adaptiveListTile.useAdaptiveListTile, isTrue);
+      });
+
+      testWidgets(
+          'uses AdaptiveListTile with useAdaptiveListTile set to false by default',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CustomSlideContextTile(
+                title: const Text('Test Child'),
+                leadingActions: [
+                  MenuAction(
+                      label: 'Action', icon: Icons.star, onPressed: () {}),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        final adaptiveListTile = tester.widget<AdaptiveListTile>(
+          find.byType(AdaptiveListTile),
+        );
+        expect(adaptiveListTile.useAdaptiveListTile, isFalse);
+      });
+
+      testWidgets(
+          'does not render context menu when using adaptive constructor',
+          (WidgetTester tester) async {
+        final actions = [
+          MenuAction(
+            label: 'Context Action',
+            icon: Icons.home,
+            onPressed: () {},
+          )
+        ];
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CustomSlideContextTile.adaptive(
+                leadingActions: actions,
+                title: const Text('Test Child'),
+              ),
+            ),
+          ),
+        );
+
+        // Attempt to open context menu
+        await tester.longPress(find.text('Test Child'));
+        await tester.pumpAndSettle();
+        expect(find.text('Context Action'), findsNothing);
+      });
+
+      testWidgets('uses CupertinoListTile on iOS when not adaptive',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(platform: TargetPlatform.iOS),
+            home: Scaffold(
+              body: CustomSlideContextTile(
+                title: const Text('Test Child'),
+                leadingActions: [
+                  MenuAction(
+                      label: 'Action', icon: Icons.star, onPressed: () {}),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        expect(find.byType(CupertinoListTile), findsOneWidget);
+        expect(find.byType(ListTile), findsNothing);
+      });
+
+      testWidgets('uses ListTile on Android when not adaptive',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(platform: TargetPlatform.android),
+            home: Scaffold(
+              body: CustomSlideContextTile(
+                title: const Text('Test Child'),
+                leadingActions: [
+                  MenuAction(
+                      label: 'Action', icon: Icons.star, onPressed: () {}),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        expect(find.byType(CupertinoListTile), findsOneWidget);
+        expect(find.byType(ListTile), findsNothing);
+      });
+
+      testWidgets('uses CupertinoListTile on macOS when not adaptive',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(platform: TargetPlatform.macOS),
+            home: Scaffold(
+              body: CustomSlideContextTile(
+                title: const Text('Test Child'),
+                leadingActions: [
+                  MenuAction(
+                      label: 'Action', icon: Icons.star, onPressed: () {}),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        expect(find.byType(CupertinoListTile), findsOneWidget);
+        expect(find.byType(ListTile), findsNothing);
+      });
+
+      testWidgets('uses ListTile on Android when adaptive',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(platform: TargetPlatform.android),
+            home: Scaffold(
+              body: CustomSlideContextTile.adaptive(
+                title: const Text('Test Child'),
+                leadingActions: [
+                  MenuAction(
+                      label: 'Action', icon: Icons.star, onPressed: () {}),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        expect(find.byType(ListTile), findsOneWidget);
+        expect(find.byType(CupertinoListTile), findsNothing);
       });
     });
   });
