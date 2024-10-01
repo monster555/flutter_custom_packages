@@ -7,6 +7,7 @@ import 'package:custom_slide_context_tile/src/utils/action_size_calculator.dart'
 import 'package:custom_slide_context_tile/src/utils/animation_helpers.dart';
 import 'package:custom_slide_context_tile/src/utils/custom_scroll_behavior.dart';
 import 'package:custom_slide_context_tile/src/utils/haptic_feedback_helper.dart';
+import 'package:custom_slide_context_tile/src/widgets/adaptive_list_tile.dart';
 import 'package:custom_slide_context_tile/src/widgets/context_menu.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,19 +15,46 @@ import 'package:flutter/material.dart';
 class CustomSlideContextTile extends StatefulWidget {
   /// Creates a [CustomSlideContextTile] without a context menu.
   ///
-  /// Use this constructor when you only need sliding actions without
-  /// a long-press context menu. This is useful for scenarios where
-  /// you want to maintain a simpler interaction model.
+  /// This constructor creates a tile with sliding actions but no long-press context menu,
+  /// providing a simpler interaction model focused on swipe gestures.
   ///
-  /// [title] is the primary content of the tile, typically a text widget.
-  /// [subtitle] is optional additional content displayed below the title.
-  /// [leading] and [trailing] define the leading and trailing widgets.
-  /// [leadingActions] and [trailingActions] define the sliding actions.
-  /// [actionExecutionThreshold] sets the sensitivity for executing actions.
-  /// [revealAnimationType] determines how actions are animated into view.
-  /// [controller] can be provided for external state management.
-  /// [shouldCloseOnScroll] determines if the tile should close when scrolling.
-  /// [onTap] is called when the tile is tapped (when not sliding).
+  /// Use this constructor when you want to offer quick actions through sliding
+  /// without the additional complexity of a context menu.
+  ///
+  /// - [title] is the primary content of the tile, typically a [Text] widget.
+  /// - [subtitle] is optional additional content displayed below the title.
+  /// - [leading] is an optional widget to display before the title.
+  /// - [trailing] is an optional widget to display after the title.
+  /// - [leadingActions] are a list of sliding actions revealed when dragging the tile to the right.
+  /// - [trailingActions] are a list of sliding actions revealed when dragging the tile to the left.
+  /// - [actionExecutionThreshold] is the distance threshold for executing an action, defaulting to 100.0.
+  /// - [revealAnimationType] determines how actions are animated into view.
+  /// - [controller] is an optional controller for external state management.
+  /// - [shouldCloseOnScroll] determines if the tile will close when the parent ScrollView is scrolled.
+  /// - [onTap] is a callback that is called when the tile is tapped (when not sliding).
+  ///
+  /// Note: This constructor sets [useAdaptiveListTile] to false and [enableContextMenu] to false.
+  ///
+  /// Example:
+  /// ```dart
+  /// CustomSlideContextTile(
+  ///   title: const Text('Swipe-only Tile'),
+  ///   subtitle: const Text('No context menu'),
+  ///   leadingActions: [
+  ///     MenuAction(
+  ///       icon: Icons.archive,
+  ///       onTap: () => print('Archive'),
+  ///     ),
+  ///   ],
+  ///   trailingActions: [
+  ///     MenuAction(
+  ///       icon: Icons.delete,
+  ///       onTap: () => print('Delete'),
+  ///     ),
+  ///   ],
+  ///   onTap: () => print('Tile tapped'),
+  /// )
+  /// ```
   const CustomSlideContextTile({
     super.key,
     required this.title,
@@ -40,17 +68,43 @@ class CustomSlideContextTile extends StatefulWidget {
     this.controller,
     this.shouldCloseOnScroll = true,
     this.onTap,
-  }) : enableContextMenu = false;
+  })  : useAdaptiveListTile = false,
+        enableContextMenu = false;
 
-  /// Creates a [CustomSlideContextTile] with a context menu.
+  /// Creates a [CustomSlideContextTile] with both sliding actions and a context menu.
   ///
-  /// Use this constructor when you want both sliding actions and
-  /// a long-press context menu. This provides a richer interaction
-  /// model, allowing users to access actions through both sliding
-  /// and long-pressing.
+  /// This constructor creates a tile that supports both sliding actions and a long-press
+  /// context menu, providing a rich interaction model for users to access actions.
+  ///
+  /// Use this constructor when you want to offer multiple ways for users to interact
+  /// with the tile's actions, accommodating different user preferences and scenarios.
   ///
   /// The parameters are the same as the default constructor, but
-  /// [enableContextMenu] is set to true.
+  /// [useAdaptiveListTile] is set to `false` and [enableContextMenu] is set to `true`.
+  ///
+  /// Example:
+  /// ```dart
+  /// CustomSlideContextTile.withContextMenu(
+  ///   title: const Text('Full-featured Tile'),
+  ///   subtitle: const Text('Slide and long-press for actions'),
+  ///   leadingActions: [
+  ///     MenuAction(
+  ///       icon: Icons.archive,
+  ///       onTap: () => print('Archive'),
+  ///     ),
+  ///   ],
+  ///   trailingActions: [
+  ///     MenuAction(
+  ///       icon: Icons.delete,
+  ///       onTap: () => print('Delete'),
+  ///     ),
+  ///   ],
+  ///   onTap: () => print('Tile tapped'),
+  /// )
+  /// ```
+  ///
+  /// The context menu will be automatically populated with the same actions
+  /// as the sliding actions, providing consistency across interaction methods.
   const CustomSlideContextTile.withContextMenu({
     super.key,
     required this.title,
@@ -64,7 +118,57 @@ class CustomSlideContextTile extends StatefulWidget {
     this.controller,
     this.shouldCloseOnScroll = true,
     this.onTap,
-  }) : enableContextMenu = true;
+  })  : useAdaptiveListTile = false,
+        enableContextMenu = true;
+
+  /// Creates an adaptive [CustomSlideContextTile] that adjusts its appearance based on the platform.
+  ///
+  /// This constructor creates a tile that uses platform-specific styling,
+  /// providing a more native look and feel on different devices. It uses
+  /// [CupertinoListTile] on iOS and macOS, and [ListTile] on other platforms.
+  ///
+  /// Use this constructor when you want to maintain platform-specific visual
+  /// consistency throughout your app, while still leveraging the sliding
+  /// action functionality of [CustomSlideContextTile].
+  ///
+  /// The parameters are the same as the default constructor, but
+  /// [useAdaptiveListTile] is set to `true` and [enableContextMenu] is set to `false`.
+  /// It does not support a context menu to maintain consistency with platform-specific list tile behaviors.
+  ///
+  /// Example:
+  /// ```dart
+  /// CustomSlideContextTile.adaptive(
+  ///   title: const Text('Adaptive Tile'),
+  ///   subtitle: const Text('Platform-specific styling'),
+  ///   leadingActions: [
+  ///     MenuAction(
+  ///       icon: Icons.archive,
+  ///       onTap: () => print('Archive'),
+  ///     ),
+  ///   ],
+  ///   trailingActions: [
+  ///     MenuAction(
+  ///       icon: Icons.delete,
+  ///       onTap: () => print('Delete'),
+  ///     ),
+  ///   ],
+  /// )
+  /// ```
+  const CustomSlideContextTile.adaptive({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.leading,
+    this.trailing,
+    this.leadingActions = const [],
+    this.trailingActions = const [],
+    this.actionExecutionThreshold = 100.0,
+    this.revealAnimationType = RevealAnimationType.reveal,
+    this.controller,
+    this.shouldCloseOnScroll = true,
+    this.onTap,
+  })  : useAdaptiveListTile = true,
+        enableContextMenu = false;
 
   /// The primary content of the list tile.
   ///
@@ -94,6 +198,14 @@ class CustomSlideContextTile extends StatefulWidget {
   /// Actions to be displayed on the trailing (right) side when sliding.
   /// These actions are revealed when the user slides the tile to the left.
   final List<MenuAction> trailingActions;
+
+  /// Whether to use an adaptive list tile style that selects [CupertinoListTile]
+  /// for Apple platforms (iOS and macOS) and [ListTile] for non-Apple platforms.
+  ///
+  /// If `true`, this property enhances the user experience by providing a native
+  /// look and feel consistent with platform-specific design guidelines. If `false`,
+  /// a standard design will be used regardless of the platform.
+  final bool useAdaptiveListTile;
 
   /// The threshold beyond which an action is considered for execution.
   /// This value determines how far the user needs to slide beyond the
@@ -220,22 +332,21 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
     return widget.trailingActions.last;
   }
 
-  /// Builds the child widget, which is a CupertinoListTile with the given title and subtitle.
+  /// Returns the core content of the [CustomSlideContextTile] as an [AdaptiveListTile].
   ///
-  /// This getter creates a constrained CupertinoListTile that mimics the appearance
-  /// of a standard list tile while integrating with the sliding functionality.
-  Widget get child => ConstrainedBox(
-        constraints: const BoxConstraints(
-          minHeight: 48,
-        ),
-        child: CupertinoListTile(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          title: widget.title,
-          subtitle: widget.subtitle,
-          leading: widget.leading,
-          trailing: widget.trailing,
-          onTap: _internalController.isOpen ? null : widget.onTap,
-        ),
+  /// This getter constructs an [AdaptiveListTile], which enhances the user experience
+  /// by providing platform-specific styling. By default, it uses a [CupertinoListTile]
+  /// for Apple platforms (iOS and macOS) as `useAdaptiveListTile` is set to `false`.
+  /// When `useAdaptiveListTile` is set to `true`, it renders either a [ListTile]
+  /// (for Android and other platforms) or a [CupertinoListTile] (for Apple platforms),
+  /// based on the current platform.
+  Widget get child => AdaptiveListTile(
+        title: widget.title,
+        subtitle: widget.subtitle,
+        leading: widget.leading,
+        trailing: widget.trailing,
+        onTap: _internalController.isOpen ? null : widget.onTap,
+        useAdaptiveListTile: widget.useAdaptiveListTile,
       );
 
   /// Determines if the tile can be dragged to the left.
