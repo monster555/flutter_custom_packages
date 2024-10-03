@@ -69,7 +69,8 @@ class _MyHomePageState extends State<MyHomePage> {
           // Action when button is pressed
           onPressed: () => log('Leading action executed'),
           label: 'Delete',
-          backgroundColor: Colors.red,
+          foregroundColor: Colors.red,
+          backgroundColor: Colors.white,
         ),
       ];
 

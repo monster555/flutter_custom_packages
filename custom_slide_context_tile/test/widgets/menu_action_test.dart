@@ -1,5 +1,5 @@
+import 'package:custom_slide_context_tile/custom_slide_context_tile.dart';
 import 'package:custom_slide_context_tile/src/utils/menu_action_scope.dart';
-import 'package:custom_slide_context_tile/src/widgets/menu_action.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -62,9 +62,10 @@ void main() {
       });
     });
 
-    group('Background Color', () {
+    group('Background and Foreground Color', () {
       testWidgets('uses provided backgroundColor', (WidgetTester tester) async {
         const backgroundColor = Colors.red;
+        const foregroundColor = Colors.white;
 
         await tester.pumpWidget(
           MaterialApp(
@@ -74,6 +75,8 @@ void main() {
                 child: MenuAction(
                   onPressed: () {},
                   icon: Icons.home,
+                  label: 'Test Label',
+                  foregroundColor: foregroundColor,
                   backgroundColor: backgroundColor,
                 ),
               ),
@@ -84,22 +87,38 @@ void main() {
         final container =
             tester.widget<DecoratedBox>(find.byType(DecoratedBox));
         expect((container.decoration as BoxDecoration).color, backgroundColor);
+
+        final icon = tester.widget<Icon>(find.byType(Icon));
+        expect(icon.color, foregroundColor);
+
+        final text = tester.widget<Text>(find.text('Test Label'));
+        expect(text.style?.color, foregroundColor);
       });
 
       testWidgets(
           'uses scaffold background color when no backgroundColor provided',
           (WidgetTester tester) async {
         const scaffoldColor = Colors.blue;
+        const defaultForegroundColor = Colors.black;
+        const defaultTextColor = Colors.yellow;
 
         await tester.pumpWidget(
           MaterialApp(
-            theme: ThemeData(scaffoldBackgroundColor: scaffoldColor),
+            theme: ThemeData(
+              scaffoldBackgroundColor: scaffoldColor,
+              iconTheme: const IconThemeData(
+                color: defaultForegroundColor,
+              ),
+              textTheme: const TextTheme(
+                  bodyMedium: TextStyle(color: defaultTextColor)),
+            ),
             home: Scaffold(
               body: MenuActionScope(
                 showLabels: true,
                 child: MenuAction(
                   onPressed: () {},
                   icon: Icons.home,
+                  label: 'Test Label',
                 ),
               ),
             ),
@@ -109,6 +128,12 @@ void main() {
         final container =
             tester.widget<DecoratedBox>(find.byType(DecoratedBox));
         expect((container.decoration as BoxDecoration).color, scaffoldColor);
+
+        final icon = tester.widget<Icon>(find.byType(Icon));
+        expect(icon.color, defaultForegroundColor);
+
+        final text = tester.widget<Text>(find.text('Test Label'));
+        expect(text.style?.color, defaultTextColor);
       });
     });
 
@@ -192,7 +217,9 @@ void main() {
     });
 
     group('Interaction', () {
-      testWidgets('calls onPressed when tapped', (WidgetTester tester) async {
+      testWidgets('calls onPressed and closes controller when tapped',
+          (WidgetTester tester) async {
+        final controller = CustomSlidableController();
         bool wasTapped = false;
 
         await tester.pumpWidget(
@@ -200,6 +227,8 @@ void main() {
             home: Scaffold(
               body: MenuActionScope(
                 showLabels: true,
+                // Pass the controller to test the controller.close() call when an action is tapped
+                controller: controller,
                 child: MenuAction(
                   onPressed: () => wasTapped = true,
                   icon: Icons.home,
@@ -209,8 +238,14 @@ void main() {
           ),
         );
 
+        expect(wasTapped, isFalse);
+        expect(controller.isOpen, isFalse);
+
         await tester.tap(find.byType(InkWell));
+
         expect(wasTapped, isTrue);
+        // Verify that the controller is closed after tap
+        expect(controller.isOpen, isFalse);
       });
     });
 
