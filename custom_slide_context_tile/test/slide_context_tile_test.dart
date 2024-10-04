@@ -658,6 +658,33 @@ void main() {
                     0.9));
       });
 
+      testWidgets('handles several actions', (WidgetTester tester) async {
+        final actions = List.generate(
+          2,
+          (index) => MenuAction(
+              label: 'Action $index', icon: Icons.star, onPressed: () {}),
+        );
+
+        await tester.pumpWidget(
+          MediaQuery(
+            data: const MediaQueryData(size: Size(400, 800)),
+            child: MaterialApp(
+              home: Scaffold(
+                body: CustomSlideContextTile(
+                  controller: controller,
+                  leadingActions: actions,
+                  trailingActions: actions,
+                  title: const Text('Test Child'),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await tester.drag(find.text('Test Child'), const Offset(100, 0));
+        await tester.pumpAndSettle();
+      });
+
       testWidgets('uses correct animation strategy',
           (WidgetTester tester) async {
         for (final animationType in RevealAnimationType.values) {
@@ -1179,6 +1206,35 @@ void main() {
 
         expect(find.byType(ListTile), findsOneWidget);
         expect(find.byType(CupertinoListTile), findsNothing);
+      });
+    });
+
+    group('AnimationTypes', () {
+      testWidgets('uses correct animation types', (WidgetTester tester) async {
+        for (final animationType in RevealAnimationType.values) {
+          await tester.pumpWidget(
+            MaterialApp(
+              home: Scaffold(
+                body: CustomSlideContextTile(
+                  key: ValueKey<String>('$animationType'),
+                  revealAnimationType: animationType,
+                  title: const Text('Test Child'),
+                  leadingActions: [
+                    MenuAction(
+                        label: 'Action', icon: Icons.star, onPressed: () {}),
+                  ],
+                ),
+              ),
+            ),
+          );
+
+          final slidableWidget = tester.widget<CustomSlideContextTile>(
+              find.byType(CustomSlideContextTile));
+          expect(
+            slidableWidget.revealAnimationType,
+            animationType,
+          );
+        }
       });
     });
   });
