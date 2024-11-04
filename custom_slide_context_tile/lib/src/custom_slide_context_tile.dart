@@ -61,6 +61,7 @@ class CustomSlideContextTile extends StatefulWidget {
     this.subtitle,
     this.leading,
     this.trailing,
+    this.padding,
     this.leadingActions = const [],
     this.trailingActions = const [],
     this.actionExecutionThreshold = 100.0,
@@ -111,6 +112,7 @@ class CustomSlideContextTile extends StatefulWidget {
     this.subtitle,
     this.leading,
     this.trailing,
+    this.padding,
     this.leadingActions = const [],
     this.trailingActions = const [],
     this.actionExecutionThreshold = 100.0,
@@ -160,6 +162,7 @@ class CustomSlideContextTile extends StatefulWidget {
     this.subtitle,
     this.leading,
     this.trailing,
+    this.padding,
     this.leadingActions = const [],
     this.trailingActions = const [],
     this.actionExecutionThreshold = 100.0,
@@ -190,6 +193,12 @@ class CustomSlideContextTile extends StatefulWidget {
   /// An optional trailing widget displayed on the right side of the tile. This is
   /// usually a right chevron icon (e.g. CupertinoListTileChevron), or an Icon.
   final Widget? trailing;
+
+  /// Custom padding for the list tile.
+  ///
+  /// If null, the default padding of the list tile will be used.
+  /// This allows for customization of the space around the tile's content.
+  final EdgeInsets? padding;
 
   /// Actions to be displayed on the leading (left) side when sliding.
   /// These actions are revealed when the user slides the tile to the right.
@@ -345,6 +354,7 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
         subtitle: widget.subtitle,
         leading: widget.leading,
         trailing: widget.trailing,
+        padding: widget.padding,
         onTap: _internalController.isOpen ? null : widget.onTap,
         useAdaptiveListTile: widget.useAdaptiveListTile,
       );
