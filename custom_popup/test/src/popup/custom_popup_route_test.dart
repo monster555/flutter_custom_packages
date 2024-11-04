@@ -426,41 +426,78 @@ main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: Align(
-              alignment: Alignment.topCenter,
-              child: CustomPopup(
-                showArrow: false,
-                content:
-                    const SizedBox(height: 600, child: Text('Tall Content')),
-                child: Container(height: 50, color: Colors.blue),
-              ),
-            ),
+            body: Builder(builder: (context) {
+              return Align(
+                alignment: Alignment.topCenter,
+                child: CustomPopup(
+                  showArrow: false,
+                  content: SizedBox(
+                      height: 600,
+                      child: Column(
+                        children: [
+                          const Text('Tall Content'),
+                          ElevatedButton(
+                            onPressed: context.pop,
+                            child: const Text('Close'),
+                          ),
+                        ],
+                      )),
+                  child: const Icon(Icons.star),
+                ),
+              );
+            }),
           ),
         ),
       );
 
-      await tester.tap(find.byType(Container).first);
+      await tester.tap(find.byIcon(Icons.star));
       await tester.pumpAndSettle();
+
+      expect(find.text('Tall Content'), findsOneWidget);
+
+      await tester.tap(find.text('Close'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Taller Content'), findsNothing);
 
       // Bottom edge test
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: Align(
-              alignment: Alignment.bottomCenter,
-              child: CustomPopup(
-                showArrow: false,
-                content:
-                    const SizedBox(height: 700, child: Text('Tall Content')),
-                child: Container(height: 50, color: Colors.blue),
-              ),
-            ),
+            body: Builder(builder: (context) {
+              return Align(
+                alignment: Alignment.bottomCenter,
+                child: CustomPopup(
+                  showArrow: false,
+                  content: SizedBox(
+                    height: 700,
+                    child: Column(
+                      children: [
+                        const Text('Taller Content'),
+                        ElevatedButton(
+                          onPressed: context.pop,
+                          child: const Text('Close'),
+                        )
+                      ],
+                    ),
+                  ),
+                  child: const Icon(Icons.home),
+                ),
+              );
+            }),
           ),
         ),
       );
 
-      await tester.tap(find.byType(Container).first);
+      await tester.tap(find.byIcon(Icons.home));
       await tester.pumpAndSettle();
+
+      expect(find.text('Taller Content'), findsOneWidget);
+
+      await tester.tap(find.text('Close'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Taller Content'), findsNothing);
     });
 
     testWidgets('handles size changes correctly', (WidgetTester tester) async {
@@ -475,7 +512,16 @@ main() {
                 child: Column(
                   children: [
                     CustomPopup(
-                      content: const Text('Popup Content'),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text('Popup Content'),
+                          TextButton(
+                            onPressed: context.pop,
+                            child: const Text('Close'),
+                          ),
+                        ],
+                      ),
                       child: Container(
                         width: 50,
                         height: 50,
@@ -498,6 +544,9 @@ main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Popup Content'), findsOneWidget);
+
+      await tester.tap(find.text('Close'));
+      await tester.pumpAndSettle();
 
       final buttonFinder = find.byType(ElevatedButton);
 

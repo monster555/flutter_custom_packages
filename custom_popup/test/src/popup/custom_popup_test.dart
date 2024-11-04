@@ -99,10 +99,7 @@ main() {
               onPressed: () {},
             ),
           ],
-          child: const SizedBox(
-            width: 50,
-            height: 50,
-          ),
+          child: const Icon(Icons.add),
         );
 
         await tester.pumpWidget(
@@ -113,7 +110,7 @@ main() {
           ),
         );
 
-        await tester.tap(find.byType(SizedBox));
+        await tester.tap(find.byIcon(Icons.add));
         await tester.pumpAndSettle();
 
         final menuContent =
