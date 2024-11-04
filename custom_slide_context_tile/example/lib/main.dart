@@ -158,7 +158,8 @@ class _MyHomePageState extends State<MyHomePage> {
               trailingActions: trailingActions,
               revealAnimationType: RevealAnimationType.pull,
               title: const Text('Swipe me'),
-              subtitle: const Text('Subtitle'),
+              subtitle: const Text('Custom Padding'),
+              padding: EdgeInsets.zero,
             ),
             const SizedBox(height: 8.0),
             CustomSlideContextTile(
