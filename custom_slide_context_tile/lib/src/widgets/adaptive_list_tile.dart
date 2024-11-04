@@ -22,6 +22,7 @@ class AdaptiveListTile extends StatelessWidget {
     this.subtitle,
     this.leading,
     this.trailing,
+    this.padding,
     this.onTap,
     this.useAdaptiveListTile = false,
   });
@@ -52,6 +53,12 @@ class AdaptiveListTile extends StatelessWidget {
   /// To show right-aligned metadata instead of a trailing icon (e.g., the time of a message),
   /// consider using [ListTile.isThreeLine] and [ListTile.subtitle].
   final Widget? trailing;
+
+  /// Custom padding for the list tile.
+  ///
+  /// If null, the default padding of the list tile will be used.
+  /// This allows for customization of the space around the tile's content.
+  final EdgeInsets? padding;
 
   /// Called when the user taps this list tile.
   ///
@@ -86,6 +93,7 @@ class AdaptiveListTile extends StatelessWidget {
             subtitle: subtitle,
             leading: leading,
             trailing: trailing,
+            contentPadding: padding,
             onTap: onTap,
           ),
         ),
@@ -97,6 +105,7 @@ class AdaptiveListTile extends StatelessWidget {
         subtitle: subtitle,
         leading: leading,
         trailing: trailing,
+        padding: padding,
         onTap: onTap,
         backgroundColor: CupertinoColors.systemBackground,
       );
