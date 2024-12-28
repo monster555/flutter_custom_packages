@@ -93,16 +93,16 @@ class _MenuItemState extends State<MenuItem> {
 class _MenuItemContent extends StatelessWidget {
   /// Creates a new [_MenuItemContent].
   ///
-  /// **Properties:**
-  /// `icon`: The icon to display alongside the menu item's label.
-  /// `label`: The text label for the menu item.
-  /// `isHovered`: Indicates whether the menu item is currently hovered.
-  /// `isDestructive`: Indicates whether the menu item represents a destructive action.
-  /// `onPressed`: The callback to invoke when the menu item is pressed.
+  /// [icon] is the icon to display alongside the menu item's label.
   ///
-  /// **Example:**
+  /// [label] is the text label for the menu item.
   ///
-  /// Here is an example of how to create and use a [_MenuItemContent]:
+  /// [isHovered] indicates whether the menu item is currently hovered.
+  ///
+  /// [isDestructive] indicates whether the menu item represents a destructive action.
+  ///
+  /// [onPressed] is the callback to invoke when the menu item is pressed.
+  ///
   ///
   /// ```dart
   /// _MenuItemContent(
@@ -115,7 +115,6 @@ class _MenuItemContent extends StatelessWidget {
   ///   },
   /// ),
   /// ```
-  ///
   const _MenuItemContent({
     required this.icon,
     required this.label,
