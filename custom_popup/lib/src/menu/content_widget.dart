@@ -63,7 +63,7 @@ class _ContentWidgetState extends State<ContentWidget> {
   Widget build(BuildContext context) {
     return InkWell(
       hoverColor: Colors.transparent,
-      splashColor: widget.color.withOpacity(0.2),
+      splashColor: widget.color.withValues(alpha: 0.2),
       highlightColor: Colors.transparent,
       borderRadius: BorderRadius.circular(8.0),
       onTap: widget.onPressed,
