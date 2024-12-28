@@ -449,7 +449,6 @@ class _CustomSlideContextTileState extends State<CustomSlideContextTile>
         return PullAnimation();
 
       case RevealAnimationType.reveal:
-      default:
         return RevealAnimation();
     }
   }
