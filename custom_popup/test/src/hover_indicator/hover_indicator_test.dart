@@ -65,7 +65,7 @@ void main() {
             .decoration,
         equals(
           BoxDecoration(
-            color: theme.colorScheme.primary.withOpacity(0.1),
+            color: theme.colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8.0),
           ),
         ),
@@ -86,7 +86,7 @@ void main() {
             .decoration,
         equals(
           BoxDecoration(
-            color: theme.colorScheme.error.withOpacity(0.1),
+            color: theme.colorScheme.error.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8.0),
           ),
         ),

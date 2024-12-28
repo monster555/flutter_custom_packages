@@ -63,7 +63,7 @@ class HoverIndicator extends StatelessWidget {
     // whether the widget represents a destructive action.
     final color = isHovered
         ? (isDestructive ? colorScheme.error : colorScheme.primary)
-            .withOpacity(0.1)
+            .withValues(alpha: 0.1)
         : Colors.transparent;
 
     return AnimatedContainer(
