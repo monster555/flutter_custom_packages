@@ -67,6 +67,8 @@ jobs:
                 labels.add('package: custom_popup');
               } else if (file.filename.startsWith('custom_slide_context_tile/')) {
                 labels.add('package: custom_slide_context_tile');
+              } else if (file.filename.startsWith('custom_expandable_slider/')) {
+                labels.add('package: custom_expandable_slider');
               } else {
                 labels.add('general');
               }
