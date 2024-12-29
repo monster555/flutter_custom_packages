@@ -1,4 +1,4 @@
-# Flutter Expandable Slider
+# Custom Expandable Slider
 
 A customizable slider widget for Flutter that expands on interaction, providing an enhanced user experience with haptic feedback and visual indicators.
 
@@ -10,47 +10,40 @@ A customizable slider widget for Flutter that expands on interaction, providing 
 - Haptic feedback at slider boundaries
 - Easy to integrate and customize
 
-## Installation
-
-Add this to your package's `pubspec.yaml` file:
-
-```yaml
-dependencies:
-  flutter_expandable_slider: ^latest_version
-```
-
 ## Usage
 
 ```dart
-ExpandableSlider(
+CustomExpandableSlider(
   width: 200,
   height: 40,
   onProgressChanged: (value) {
     print('Progress: ${value * 100}%');
   },
-  color: Colors.blue,
+  color: Colors.red,
   enableHaptics: false,
   showThumb: false,
 )
 ```
 
+![no_tumb_no_haptics](https://github.com/user-attachments/assets/dfa7cead-90a2-49e4-9162-17111722a9ec)
+
 ## With Thumb Constructor
 
 ```dart
-ExpandableSlider.withThumb(
+CustomExpandableSlider.withThumb(
   width: 200,
   height: 40,
   onProgressChanged: (value) {
     print('Progress: ${value * 100}%');
   },
-  color: Colors.blue,
+  color: Colors.green,
 )
 ```
 
-## Example
-An example project is included to demonstrate the usage and customization of the `ExpandableSlider` widget. Please refer to the example directory for more details.
+![with_thumb](https://github.com/user-attachments/assets/694b6857-3693-40ff-96fc-ebf8c6b59f0d)
 
-<!-- Include GIFs here -->
+## Example
+An example project is included to demonstrate the usage and customization of the `CustomExpandableSlider` widget. Please refer to the example directory for more details.
 
 ## Properties
 
@@ -71,6 +64,12 @@ An example project is included to demonstrate the usage and customization of the
 
 ### Behavior
 - `enableHaptics` (bool): Enable/disable haptic feedback. Defaults to true
+
+## Support
+Like this project? Show your support with a ⭐️ — it’s free and means a lot!<br> 
+Feeling generous? A coffee would definitely kickstart my morning! ☕ Thanks!
+
+<a href="https://www.buymeacoffee.com/danicoy" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
 ## Contributing
 
