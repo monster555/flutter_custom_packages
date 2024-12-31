@@ -1,11 +1,14 @@
 # Flutter Custom Packages
 
-This repository contains two custom **Flutter** packages:
+This repository contains a few custom **Flutter** packages:
 
 1. `CustomPopup`
 2. `CustomSlideContextTile`
+3. `CustomExpandableSlider`
 
-These packages are the result of my experimentation and enjoyment in **Flutter** development, designed to improve the user experience in **Flutter** applications.
+Just a set of **Flutter** packages I've built. No third-party libraries.
+
+No package leaves without passing a comprehensive test battery ;)
 
 ## Packages
 
@@ -21,6 +24,12 @@ These packages are the result of my experimentation and enjoyment in **Flutter**
 
 [Learn more about CustomSlideContextTile](./custom_slide_context_tile/README.md)
 
+### CustomExpandableSlider
+
+`CustomExpandableSlider` is a **Flutter** widget that provides an expandable slider with smooth animations. It features expansion animations using `Transform` and `AnimationController`, easily customizable appearance, and haptic feedback for enhanced user experience. This widget is implemented without relying on third-party packages, offering full control over its behavior and appearance.
+
+[Learn more about CustomExpandableSlider](./custom_expandable_slider/README.md)
+
 ## Installation
 
 To use these packages in your **Flutter** project, add the following to your `pubspec.yaml` file:
@@ -31,10 +40,16 @@ dependencies:
     git:
       url: https://github.com/monster555/flutter_custom_packages.git
       path: custom_popup
+
   custom_slide_context_tile:
     git:
       url: https://github.com/monster555/flutter_custom_packages.git
       path: custom_slide_context_tile
+
+  custom_expandable_slider:
+    git:
+      url: https://github.com/monster555/flutter_custom_packages.git
+      path: custom_expandable_slider
 ```
 
 ## Usage
@@ -43,17 +58,25 @@ For detailed usage instructions and examples, please refer to the README of each
 
 - [CustomPopup Usage](./custom_popup/README.md#usage)
 - [CustomSlideContextTile Usage](./custom_slide_context_tile/README.md#basic-usage)
+- [CustomExpandableSlider Usage](./custom_expandable_slider/README.md#usage)
 
 ## Examples
 
 You can find example projects demonstrating the use of these packages in their respective example folders:
 - [CustomPopup Examples](./custom_popup/example/)
 - [CustomSlideContextTile Examples](./custom_slide_context_tile/example/)
+- [CustomExpandableSlider Examples](./custom_expandable_slider/example/)
 
 ## Contributing
 
 Contributions to either package are welcome! Please feel free to submit issues or pull requests.
 
+## Support
+Like this project? Show your support with a ⭐️ — it’s free and means a lot!<br> 
+Feeling generous? A coffee would definitely kickstart my morning! ☕ Thanks!
+
+<a href="https://www.buymeacoffee.com/danicoy" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+
 ## License
 
-Both packages are licensed under the MIT License. See the LICENSE file for details.
+These packages are licensed under the MIT License. See the LICENSE file for details.
